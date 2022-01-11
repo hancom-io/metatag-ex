@@ -105,26 +105,16 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
         }
         
 #ifndef OS_UNIX
-		char drive[100];
-		char dir[100];
-		char fname[100];
-		char ext[100];
 		char path[MAX_PATH];
-		_splitpath(std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str(), drive, dir, fname, ext);
-		sprintf(path, "%s%s%s%s", drive, dir, fname, ".zip");
-		rename(std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str(), path);
 #else
         char path[PATH_MAX];
-        sprintf(path, "%s", std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
 #endif
+        sprintf(path, "%s", std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
 		if (Util::extract(path, unzipPath.c_str()) == -1)
 		{
 			std::cout << std::string(path) + StringResource::PathSeperator + *iter_file + StringResource::ExtractionFailed << std::endl;
 			return;
 		}
-#ifndef OS_UNIX
-		rename(path, std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
-#endif
 
 		SearchHeader(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
 		SearchSection(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
@@ -426,26 +416,16 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
         }
 
 #ifndef OS_UNIX
-		char drive[100];
-		char dir[100];
-		char fname[100];
-		char ext[100];
 		char path[MAX_PATH];
-		_splitpath(std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str(), drive, dir, fname, ext);
-		sprintf(path, "%s%s%s%s", drive, dir, fname, ".zip");
-		rename(std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str(), path);
 #else
         char path[PATH_MAX];
-        sprintf(path, "%s", std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
 #endif // OS_UNIX
+        sprintf(path, "%s", std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
 		if (Util::extract(path, unzipPath.c_str()) == -1)
 		{
 			std::cout << std::string(path) + StringResource::PathSeperator + *iter_file + StringResource::ExtractionFailed << std::endl;
 			return;
 		}
-#ifndef OS_UNIX
-		rename(path, std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
-#endif // OS_UNIX
 
         TraverseHeader(unzipPath, jsonDoc);
         TraverseSection(unzipPath, jsonDoc);
