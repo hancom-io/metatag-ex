@@ -1,0 +1,14 @@
+prefix=${pcfiledir}/../..
+
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/../include
+
+Name: libarchive
+Description: library that can create and read several streaming archive formats
+Version: 3.5.2
+Cflags: -I"${includedir}"
+Cflags.private: -DLIBARCHIVE_STATIC
+Libs: -L"${libdir}" -larchive
+Libs.private:  -lcrypto -lssl -lssl -lssl -lssl -lssl -lssl
+Requires.private:  zlib bzip2 liblzma liblz4 libzstd libxml-2.0
