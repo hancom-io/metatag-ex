@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/jenkins/Projects/Temp/MetatagEX
+CMAKE_SOURCE_DIR = /home/jenkins/MetatagEX
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/jenkins/Projects/Temp/MetatagEX/build
+CMAKE_BINARY_DIR = /home/jenkins/MetatagEX/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -92,7 +92,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target package_source
 package_source:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Run CPack packaging tool for source..."
-	/usr/bin/cpack --config ./CPackSourceConfig.cmake /home/jenkins/Projects/Temp/MetatagEX/build/CPackSourceConfig.cmake
+	/usr/bin/cpack --config ./CPackSourceConfig.cmake /home/jenkins/MetatagEX/build/CPackSourceConfig.cmake
 .PHONY : package_source
 
 # Special rule for the target package_source
@@ -113,9 +113,9 @@ package/fast: package
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jenkins/Projects/Temp/MetatagEX/build/CMakeFiles /home/jenkins/Projects/Temp/MetatagEX/build/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jenkins/MetatagEX/build/CMakeFiles /home/jenkins/MetatagEX/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jenkins/Projects/Temp/MetatagEX/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jenkins/MetatagEX/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -520,6 +520,33 @@ ContinuousSubmit/fast:
 	$(MAKE) -f CMakeFiles/ContinuousSubmit.dir/build.make CMakeFiles/ContinuousSubmit.dir/build
 .PHONY : ContinuousSubmit/fast
 
+CommandParser.o: CommandParser.cpp.o
+
+.PHONY : CommandParser.o
+
+# target to build an object file
+CommandParser.cpp.o:
+	$(MAKE) -f CMakeFiles/MetatagEX.dir/build.make CMakeFiles/MetatagEX.dir/CommandParser.cpp.o
+.PHONY : CommandParser.cpp.o
+
+CommandParser.i: CommandParser.cpp.i
+
+.PHONY : CommandParser.i
+
+# target to preprocess a source file
+CommandParser.cpp.i:
+	$(MAKE) -f CMakeFiles/MetatagEX.dir/build.make CMakeFiles/MetatagEX.dir/CommandParser.cpp.i
+.PHONY : CommandParser.cpp.i
+
+CommandParser.s: CommandParser.cpp.s
+
+.PHONY : CommandParser.s
+
+# target to generate assembly for a file
+CommandParser.cpp.s:
+	$(MAKE) -f CMakeFiles/MetatagEX.dir/build.make CMakeFiles/MetatagEX.dir/CommandParser.cpp.s
+.PHONY : CommandParser.cpp.s
+
 MetatagEX.o: MetatagEX.cpp.o
 
 .PHONY : MetatagEX.o
@@ -668,6 +695,9 @@ help:
 	@echo "... ContinuousMemCheck"
 	@echo "... ContinuousTest"
 	@echo "... ContinuousSubmit"
+	@echo "... CommandParser.o"
+	@echo "... CommandParser.i"
+	@echo "... CommandParser.s"
 	@echo "... MetatagEX.o"
 	@echo "... MetatagEX.i"
 	@echo "... MetatagEX.s"

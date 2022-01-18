@@ -25,7 +25,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 21,
+				"line" : 18,
 				"parent" : 0
 			},
 			{
@@ -58,7 +58,8 @@
 				0,
 				1,
 				2,
-				3
+				3,
+				4
 			]
 		}
 	],
@@ -106,7 +107,8 @@
 				0,
 				1,
 				2,
-				3
+				3,
+				4
 			]
 		}
 	],
@@ -122,6 +124,12 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "MetatagEX.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "CommandParser.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

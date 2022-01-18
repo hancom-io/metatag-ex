@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/jenkins/Projects/Temp/MetatagEX
+CMAKE_SOURCE_DIR = /home/jenkins/MetatagEX
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/jenkins/Projects/Temp/MetatagEX/build
+CMAKE_BINARY_DIR = /home/jenkins/MetatagEX/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/MetatagEX.dir/depend.make
@@ -59,60 +59,74 @@ include CMakeFiles/MetatagEX.dir/flags.make
 
 CMakeFiles/MetatagEX.dir/main.cpp.o: CMakeFiles/MetatagEX.dir/flags.make
 CMakeFiles/MetatagEX.dir/main.cpp.o: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jenkins/Projects/Temp/MetatagEX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/MetatagEX.dir/main.cpp.o"
-	/bin/x86_64-linux-gnu-g++-9  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MetatagEX.dir/main.cpp.o -c /home/jenkins/Projects/Temp/MetatagEX/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jenkins/MetatagEX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/MetatagEX.dir/main.cpp.o"
+	/bin/x86_64-linux-gnu-g++-9  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MetatagEX.dir/main.cpp.o -c /home/jenkins/MetatagEX/main.cpp
 
 CMakeFiles/MetatagEX.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/MetatagEX.dir/main.cpp.i"
-	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jenkins/Projects/Temp/MetatagEX/main.cpp > CMakeFiles/MetatagEX.dir/main.cpp.i
+	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jenkins/MetatagEX/main.cpp > CMakeFiles/MetatagEX.dir/main.cpp.i
 
 CMakeFiles/MetatagEX.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/MetatagEX.dir/main.cpp.s"
-	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jenkins/Projects/Temp/MetatagEX/main.cpp -o CMakeFiles/MetatagEX.dir/main.cpp.s
+	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jenkins/MetatagEX/main.cpp -o CMakeFiles/MetatagEX.dir/main.cpp.s
 
 CMakeFiles/MetatagEX.dir/MetatagEX.cpp.o: CMakeFiles/MetatagEX.dir/flags.make
 CMakeFiles/MetatagEX.dir/MetatagEX.cpp.o: ../MetatagEX.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jenkins/Projects/Temp/MetatagEX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/MetatagEX.dir/MetatagEX.cpp.o"
-	/bin/x86_64-linux-gnu-g++-9  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MetatagEX.dir/MetatagEX.cpp.o -c /home/jenkins/Projects/Temp/MetatagEX/MetatagEX.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jenkins/MetatagEX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/MetatagEX.dir/MetatagEX.cpp.o"
+	/bin/x86_64-linux-gnu-g++-9  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MetatagEX.dir/MetatagEX.cpp.o -c /home/jenkins/MetatagEX/MetatagEX.cpp
 
 CMakeFiles/MetatagEX.dir/MetatagEX.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/MetatagEX.dir/MetatagEX.cpp.i"
-	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jenkins/Projects/Temp/MetatagEX/MetatagEX.cpp > CMakeFiles/MetatagEX.dir/MetatagEX.cpp.i
+	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jenkins/MetatagEX/MetatagEX.cpp > CMakeFiles/MetatagEX.dir/MetatagEX.cpp.i
 
 CMakeFiles/MetatagEX.dir/MetatagEX.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/MetatagEX.dir/MetatagEX.cpp.s"
-	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jenkins/Projects/Temp/MetatagEX/MetatagEX.cpp -o CMakeFiles/MetatagEX.dir/MetatagEX.cpp.s
+	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jenkins/MetatagEX/MetatagEX.cpp -o CMakeFiles/MetatagEX.dir/MetatagEX.cpp.s
+
+CMakeFiles/MetatagEX.dir/CommandParser.cpp.o: CMakeFiles/MetatagEX.dir/flags.make
+CMakeFiles/MetatagEX.dir/CommandParser.cpp.o: ../CommandParser.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jenkins/MetatagEX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/MetatagEX.dir/CommandParser.cpp.o"
+	/bin/x86_64-linux-gnu-g++-9  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MetatagEX.dir/CommandParser.cpp.o -c /home/jenkins/MetatagEX/CommandParser.cpp
+
+CMakeFiles/MetatagEX.dir/CommandParser.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/MetatagEX.dir/CommandParser.cpp.i"
+	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jenkins/MetatagEX/CommandParser.cpp > CMakeFiles/MetatagEX.dir/CommandParser.cpp.i
+
+CMakeFiles/MetatagEX.dir/CommandParser.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/MetatagEX.dir/CommandParser.cpp.s"
+	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jenkins/MetatagEX/CommandParser.cpp -o CMakeFiles/MetatagEX.dir/CommandParser.cpp.s
 
 CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.o: CMakeFiles/MetatagEX.dir/flags.make
 CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.o: ../extend/XmlParser.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jenkins/Projects/Temp/MetatagEX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.o"
-	/bin/x86_64-linux-gnu-g++-9  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.o -c /home/jenkins/Projects/Temp/MetatagEX/extend/XmlParser.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jenkins/MetatagEX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.o"
+	/bin/x86_64-linux-gnu-g++-9  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.o -c /home/jenkins/MetatagEX/extend/XmlParser.cpp
 
 CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.i"
-	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jenkins/Projects/Temp/MetatagEX/extend/XmlParser.cpp > CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.i
+	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jenkins/MetatagEX/extend/XmlParser.cpp > CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.i
 
 CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.s"
-	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jenkins/Projects/Temp/MetatagEX/extend/XmlParser.cpp -o CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.s
+	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jenkins/MetatagEX/extend/XmlParser.cpp -o CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.s
 
 CMakeFiles/MetatagEX.dir/util/Util.cpp.o: CMakeFiles/MetatagEX.dir/flags.make
 CMakeFiles/MetatagEX.dir/util/Util.cpp.o: ../util/Util.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jenkins/Projects/Temp/MetatagEX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/MetatagEX.dir/util/Util.cpp.o"
-	/bin/x86_64-linux-gnu-g++-9  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MetatagEX.dir/util/Util.cpp.o -c /home/jenkins/Projects/Temp/MetatagEX/util/Util.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/jenkins/MetatagEX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/MetatagEX.dir/util/Util.cpp.o"
+	/bin/x86_64-linux-gnu-g++-9  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/MetatagEX.dir/util/Util.cpp.o -c /home/jenkins/MetatagEX/util/Util.cpp
 
 CMakeFiles/MetatagEX.dir/util/Util.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/MetatagEX.dir/util/Util.cpp.i"
-	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jenkins/Projects/Temp/MetatagEX/util/Util.cpp > CMakeFiles/MetatagEX.dir/util/Util.cpp.i
+	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/jenkins/MetatagEX/util/Util.cpp > CMakeFiles/MetatagEX.dir/util/Util.cpp.i
 
 CMakeFiles/MetatagEX.dir/util/Util.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/MetatagEX.dir/util/Util.cpp.s"
-	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jenkins/Projects/Temp/MetatagEX/util/Util.cpp -o CMakeFiles/MetatagEX.dir/util/Util.cpp.s
+	/bin/x86_64-linux-gnu-g++-9 $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/jenkins/MetatagEX/util/Util.cpp -o CMakeFiles/MetatagEX.dir/util/Util.cpp.s
 
 # Object files for target MetatagEX
 MetatagEX_OBJECTS = \
 "CMakeFiles/MetatagEX.dir/main.cpp.o" \
 "CMakeFiles/MetatagEX.dir/MetatagEX.cpp.o" \
+"CMakeFiles/MetatagEX.dir/CommandParser.cpp.o" \
 "CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.o" \
 "CMakeFiles/MetatagEX.dir/util/Util.cpp.o"
 
@@ -121,13 +135,14 @@ MetatagEX_EXTERNAL_OBJECTS =
 
 MetatagEX: CMakeFiles/MetatagEX.dir/main.cpp.o
 MetatagEX: CMakeFiles/MetatagEX.dir/MetatagEX.cpp.o
+MetatagEX: CMakeFiles/MetatagEX.dir/CommandParser.cpp.o
 MetatagEX: CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.o
 MetatagEX: CMakeFiles/MetatagEX.dir/util/Util.cpp.o
 MetatagEX: CMakeFiles/MetatagEX.dir/build.make
 MetatagEX: /usr/lib/x86_64-linux-gnu/libxerces-c.so
 MetatagEX: /usr/lib/x86_64-linux-gnu/libarchive.so
 MetatagEX: CMakeFiles/MetatagEX.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jenkins/Projects/Temp/MetatagEX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable MetatagEX"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/jenkins/MetatagEX/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable MetatagEX"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/MetatagEX.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -140,6 +155,6 @@ CMakeFiles/MetatagEX.dir/clean:
 .PHONY : CMakeFiles/MetatagEX.dir/clean
 
 CMakeFiles/MetatagEX.dir/depend:
-	cd /home/jenkins/Projects/Temp/MetatagEX/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jenkins/Projects/Temp/MetatagEX /home/jenkins/Projects/Temp/MetatagEX /home/jenkins/Projects/Temp/MetatagEX/build /home/jenkins/Projects/Temp/MetatagEX/build /home/jenkins/Projects/Temp/MetatagEX/build/CMakeFiles/MetatagEX.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/jenkins/MetatagEX/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jenkins/MetatagEX /home/jenkins/MetatagEX /home/jenkins/MetatagEX/build /home/jenkins/MetatagEX/build /home/jenkins/MetatagEX/build/CMakeFiles/MetatagEX.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/MetatagEX.dir/depend
 

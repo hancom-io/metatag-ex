@@ -72,8 +72,8 @@ class MetatagEX
             return &metatagContainer;
         }
 
-        void ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc);
-        void SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option);
+        void ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc, bool bShowProgress);
+        void SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bShowProgress);
         static void CalcPercentProc(int nFileCnt);
 
     private:

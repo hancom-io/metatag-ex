@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/jenkins/Projects/Temp/MetatagEX
+CMAKE_SOURCE_DIR = /home/jenkins/MetatagEX
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/jenkins/Projects/Temp/MetatagEX/build
+CMAKE_BINARY_DIR = /home/jenkins/MetatagEX/build
 
 # Utility rule file for ContinuousSubmit.
 
@@ -71,6 +71,6 @@ CMakeFiles/ContinuousSubmit.dir/clean:
 .PHONY : CMakeFiles/ContinuousSubmit.dir/clean
 
 CMakeFiles/ContinuousSubmit.dir/depend:
-	cd /home/jenkins/Projects/Temp/MetatagEX/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jenkins/Projects/Temp/MetatagEX /home/jenkins/Projects/Temp/MetatagEX /home/jenkins/Projects/Temp/MetatagEX/build /home/jenkins/Projects/Temp/MetatagEX/build /home/jenkins/Projects/Temp/MetatagEX/build/CMakeFiles/ContinuousSubmit.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/jenkins/MetatagEX/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/jenkins/MetatagEX /home/jenkins/MetatagEX /home/jenkins/MetatagEX/build /home/jenkins/MetatagEX/build /home/jenkins/MetatagEX/build/CMakeFiles/ContinuousSubmit.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/ContinuousSubmit.dir/depend
 
