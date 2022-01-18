@@ -1,6 +1,20 @@
 #include <fstream>
 #include "CommandParser.h"
 #include "EXdefine.h" // StringResource
+#ifdef OS_UNIX
+	#include <unistd.h>
+    #include <dirent.h>
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <archive.h>
+    #include <archive_entry.h>
+    #include <fcntl.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include <unistd.h>
+    #include <limits.h>
+#endif // OS_UNIX
 CommandParser::CommandParser(int inputArgs, char** inputArr)
 {
 	for (int i = 1; i < inputArgs; ++i)
@@ -24,6 +38,11 @@ bool CommandParser::ShowHelp()
 		if (CommandWord::Help.compare(*iter) == 0)
 		{
 #ifdef OS_UNIX
+			int flags = ARCHIVE_EXTRACT_PERM
+                | ARCHIVE_EXTRACT_TIME
+                | ARCHIVE_EXTRACT_ACL
+                | ARCHIVE_EXTRACT_FFLAGS
+                | ARCHIVE_EXTRACT_XATTR;
 			if (geteuid() == 0)
 				flags |= ARCHIVE_EXTRACT_OWNER;
 
@@ -66,7 +85,7 @@ bool CommandParser::ShowHelp()
 
 bool CommandParser::ParsingInput()
 {
-	// ConfigurePathCnt ·Î Ä¿¸Çµå¸¦ ºÐ¼®ÇÏ¿© ¸î¹øÂ° ¹®ÀÚ¿­ºÎÅÍ °æ·ÎÀÎÁö ÆÄ¾ÇÇØ¾ßÇÑ´Ù.
+	// ConfigurePathCnt ï¿½ï¿½ Ä¿ï¿½Çµå¸¦ ï¿½Ð¼ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½Â° ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¾ï¿½ï¿½Ø¾ï¿½ï¿½Ñ´ï¿½.
 	if (ConfigureOption(CommandWord::GetSourceList, 1) == false)
 	{
 		if (ConfigureOption(CommandWord::GetDestList, 2) == false)
@@ -97,14 +116,14 @@ bool CommandParser::ParsingInput()
 	return true;
 }
 
-// Option µéÀ» Parsing ÇÑ´Ù
+// Option ï¿½ï¿½ï¿½ï¿½ Parsing ï¿½Ñ´ï¿½
 bool CommandParser::ConfigureOption(const std::string& inputStr, int pathCnt)
 {
 	bool ret = false;
 	std::vector<const char*>::iterator iter = m_inputStrVector.begin();
 	for (iter; iter != m_inputStrVector.end(); ++iter)
 	{
-		// Path ¹®ÀÚ¿­ÀÌ ¸î°³ÀÎÁö ÁöÁ¤ÇÑ´Ù.
+		// Path ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½î°³ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
 		if (inputStr.compare(*iter) == 0)
 		{
 			m_nPathCnt = pathCnt;
@@ -131,6 +150,10 @@ bool CommandParser::ConfigureOption(const std::string& inputStr, int pathCnt)
 		else if (CommandWord::Help.compare(*iter) == 0)
 		{
 			CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::Help, true));
+		}
+		else if (CommandWord::ShowProgress.compare(*iter) == 0)
+		{
+			CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::ShowProgress, true));
 		}
 	}
 	return ret;

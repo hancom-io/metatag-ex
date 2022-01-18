@@ -2,10 +2,10 @@
 #include <map>
 #include <iostream>
 #ifndef OS_UNIX
-#include <atlstr.h>
-#include <Windows.h>
+	#include <atlstr.h>
+	#include <Windows.h>
+	#include <direct.h>
 #endif
-#include <direct.h>
 #include <string>
 enum CommandDef
 {
@@ -13,7 +13,8 @@ enum CommandDef
 	OrderDescend,
 	SourceList,
 	DestList,
-	Help
+	Help,
+	ShowProgress,
 };
 namespace CommandWord
 {
@@ -22,15 +23,16 @@ namespace CommandWord
 	static std::string GetSourceList = "sl";
 	static std::string GetDestList = "dl";
 	static std::string Help = "help";
+	static std::string ShowProgress = "pr";
 }
 class CommandParser
 {
 public:
 	CommandParser(int inputArgs, char** inputArr);
 	~CommandParser();
-	// ÀÔ·ÂÀ¸·Î µé¾î¿Â ¹®ÀÚ¿­À» ÆÄ½ÌÇÑ´Ù.
+	// ï¿½Ô·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½ï¿½Ñ´ï¿½.
 	bool ParsingInput();
-	// inputStr¿¡ ÇØ´çÇÏ´Â ¹®ÀÚ°¡ ÀÖÀ»°æ¿ì °æ·Î¹®ÀÚ¼ö¸¦ °áÁ¤ÇÑ´Ù.
+	// inputStrï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Î¹ï¿½ï¿½Ú¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
 	bool ConfigureOption(const std::string& inputStr, int pathCnt);
 	bool ShowHelp();
 

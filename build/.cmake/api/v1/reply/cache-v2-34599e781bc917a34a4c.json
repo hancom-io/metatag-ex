@@ -99,7 +99,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/jenkins/Projects/Temp/MetatagEX/build"
+			"value" : "/home/jenkins/MetatagEX/build"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -667,7 +667,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/home/jenkins/Projects/Temp/MetatagEX"
+			"value" : "/home/jenkins/MetatagEX"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1971,7 +1971,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/jenkins/Projects/Temp/MetatagEX/build"
+			"value" : "/home/jenkins/MetatagEX/build"
 		},
 		{
 			"name" : "MetatagEX_SOURCE_DIR",
@@ -1983,7 +1983,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/home/jenkins/Projects/Temp/MetatagEX"
+			"value" : "/home/jenkins/MetatagEX"
 		},
 		{
 			"name" : "P4COMMAND",

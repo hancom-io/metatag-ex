@@ -31,7 +31,7 @@ void MetatagEX::CalcPercentProc(int nFileCnt)
     return;
 }
 
-void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option)
+void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bShowProgress)
 {
 	Initialize();
 
@@ -65,7 +65,11 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
     vector<std::string> files;
     std::string regexStr = Util::getdir(inputPath, files);
     vector<std::string>::iterator iter_file = files.begin();
-    std::thread CountingThread(CalcPercentProc, files.size());
+    std::thread* CountingThread = NULL;
+    if(bShowProgress)
+    {
+        CountingThread = new std::thread(CalcPercentProc, files.size());
+    }
     for(iter_file; iter_file != files.end(); ++iter_file)
     {
         std::regex reg;
@@ -120,7 +124,11 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
 		SearchSection(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
         Util::removeDirectory(unzipPath.c_str());
     }
-    CountingThread.join();
+    if(CountingThread != NULL)
+    {
+        CountingThread->join();
+        delete CountingThread;
+    }
     if(option == Option::Console)
     {
         std::vector<std::pair<std::string, std::u16string>>::iterator iter_sorted = MetatagEX::GetSortedMetatag()->begin();
@@ -366,7 +374,7 @@ void MetatagEX::SortShape(DOMNode* node, std::string filePath)
     shapeList.clear();
 }
 
-void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc)
+void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc, bool bShowProgress)
 {
 	Initialize();
 
@@ -375,7 +383,11 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
     vector<std::string>::iterator iter_file = files.begin();
     rapidjson::Document jsonDoc;
     jsonDoc.SetObject();
-    std::thread CountingThread(CalcPercentProc, files.size());
+    std::thread* CountingThread = NULL;
+    if(bShowProgress)
+    {
+        CountingThread = new std::thread(CalcPercentProc, files.size());
+    }
     for(iter_file; iter_file != files.end(); ++iter_file)
     {
         std::regex reg;
@@ -433,7 +445,11 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
         Util::removeDirectory(unzipPath.c_str());
     }
 
-    CountingThread.join();
+    if(CountingThread != NULL)
+    {
+        CountingThread->join();
+        delete CountingThread;
+    }
     // Order
     if(dsc == Option::Descend)
     {

@@ -4,9 +4,9 @@
 //#ifndef OS_UNIX
 #include <archive.h>
 #include <archive_entry.h>
-//#else
+#ifndef OS_UNIX
 	#include <Windows.h>
-//#endif
+#endif
 class Util {
     public:
         static bool IsExistFile(const std::wstring& path);

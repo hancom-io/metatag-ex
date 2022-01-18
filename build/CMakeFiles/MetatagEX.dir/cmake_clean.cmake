@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/MetatagEX.dir/CommandParser.cpp.o"
   "CMakeFiles/MetatagEX.dir/MetatagEX.cpp.o"
   "CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.o"
   "CMakeFiles/MetatagEX.dir/main.cpp.o"

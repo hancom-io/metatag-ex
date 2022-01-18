@@ -220,7 +220,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "MetatagEX::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-MetatagEX-Debug-f46723af1d90cf8d5b03.json",
+					"jsonFile" : "target-MetatagEX-Debug-3e556c43fb2f335a64a9.json",
 					"name" : "MetatagEX",
 					"projectIndex" : 0
 				},
@@ -300,8 +300,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/home/jenkins/Projects/Temp/MetatagEX/build",
-		"source" : "/home/jenkins/Projects/Temp/MetatagEX"
+		"build" : "/home/jenkins/MetatagEX/build",
+		"source" : "/home/jenkins/MetatagEX"
 	},
 	"version" : 
 	{
