@@ -22,9 +22,11 @@ Metattg Extract, Sort
 - dsc(descend) : 내림차순으로 결과를 출력 또는 저장 default는 오름차순
 - pr(progress) : 진행 Percent를 콘솔(터미널)에 출력한다. 쓰레드로 동작한다.
 ====================================================
-* 사용된 라이브러리
+* 사용된 라이브러리(License)
 - xerces-c(Apache License 2.0)
 - rapidjson(MIT)
 - libarchive(new BSD)
 
 ====================================================
+* Contributing
+-요구 기술 : C/C++, Windows Programming, Linux
