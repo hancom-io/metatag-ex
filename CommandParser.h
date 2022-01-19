@@ -15,6 +15,7 @@ enum CommandDef
 	DestList,
 	Help,
 	ShowProgress,
+	HeaderOnly
 };
 namespace CommandWord
 {
@@ -24,6 +25,7 @@ namespace CommandWord
 	static std::string GetDestList = "dl";
 	static std::string Help = "help";
 	static std::string ShowProgress = "pr";
+	static std::string HeaderOnly = "doc";
 }
 class CommandParser
 {

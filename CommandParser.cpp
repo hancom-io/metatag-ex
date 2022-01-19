@@ -38,21 +38,14 @@ bool CommandParser::ShowHelp()
 		if (CommandWord::Help.compare(*iter) == 0)
 		{
 #ifdef OS_UNIX
-			int flags = ARCHIVE_EXTRACT_PERM
-                | ARCHIVE_EXTRACT_TIME
-                | ARCHIVE_EXTRACT_ACL
-                | ARCHIVE_EXTRACT_FFLAGS
-                | ARCHIVE_EXTRACT_XATTR;
-			if (geteuid() == 0)
-				flags |= ARCHIVE_EXTRACT_OWNER;
-
 			char cwd[PATH_MAX];
 			getcwd(cwd, sizeof(cwd));
+			std::string helpFilePath = std::string(cwd) + StringResource::PathSeperator + ".." + StringResource::PathSeperator + "MetatagEXHelp.txt";
 #else
 			char cwd[MAX_PATH];
 			_getcwd(cwd, sizeof(cwd));
-#endif
 			std::string helpFilePath = std::string(cwd) + StringResource::PathSeperator + "MetatagEXHelp.txt";
+#endif
 			std::ifstream readFile(helpFilePath);
 			if (readFile.is_open() == true)
 			{
@@ -154,6 +147,10 @@ bool CommandParser::ConfigureOption(const std::string& inputStr, int pathCnt)
 		else if (CommandWord::ShowProgress.compare(*iter) == 0)
 		{
 			CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::ShowProgress, true));
+		}
+		else if (CommandWord::HeaderOnly.compare(*iter) == 0)
+		{
+			CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::HeaderOnly, true));
 		}
 	}
 	return ret;

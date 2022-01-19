@@ -31,7 +31,7 @@ void MetatagEX::CalcPercentProc(int nFileCnt)
     return;
 }
 
-void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bShowProgress)
+void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bShowProgress, bool bHeaderOnly)
 {
 	Initialize();
 
@@ -121,7 +121,10 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
 		}
 
 		SearchHeader(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
-		SearchSection(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
+        if(bHeaderOnly == false)
+        {
+		    SearchSection(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
+        }
         Util::removeDirectory(unzipPath.c_str());
     }
     if(CountingThread != NULL)
@@ -374,7 +377,7 @@ void MetatagEX::SortShape(DOMNode* node, std::string filePath)
     shapeList.clear();
 }
 
-void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc, bool bShowProgress)
+void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc, bool bShowProgress, bool bHeaderOnly)
 {
 	Initialize();
 
@@ -440,8 +443,10 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
 		}
 
         TraverseHeader(unzipPath, jsonDoc);
-        TraverseSection(unzipPath, jsonDoc);
-
+        if (bHeaderOnly == false)
+        {
+            TraverseSection(unzipPath, jsonDoc);
+        }
         Util::removeDirectory(unzipPath.c_str());
     }
 
