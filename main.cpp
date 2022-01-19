@@ -3,10 +3,6 @@
 #include "CommandParser.h"
 int main(int argc, char** argv) {
     MetatagEX metatagEX;
-	//metatagEX.ExtractMetatag("C:\\Users\\hancom\\CMakeBuilds\\fd8840c2-8ffd-863e-a8c1-6ef7da577a33\\build\\x64-Debug(�⺻��)\\^.*.hwpx", "C:\\Users\\hancom\\CMakeBuilds\\fd8840c2-8ffd-863e-a8c1-6ef7da577a33\\build\\x64-Debug(�⺻��)\\result.json", Option::Console, Option::Ascend);
-	//return 0;
-	//metatagEX.SortMetatag("C:\\Users\\hancom\\CMakeBuilds\\fd8840c2-8ffd-863e-a8c1-6ef7da577a33\\build\\x64-Debug(�⺻��)\\^.*.hwpx", "C:\\Users\\hancom\\CMakeBuilds\\fd8840c2-8ffd-863e-a8c1-6ef7da577a33\\build\\x64-Debug(�⺻��)\\result.json", "C:\\Users\\hancom\\CMakeBuilds\\fd8840c2-8ffd-863e-a8c1-6ef7da577a33\\build\\x64-Debug(�⺻��)\\output.json", Option::File);
-	//return 0;
 	if (argc >= 1)
 	{
 		bool bFile = false;
@@ -14,6 +10,7 @@ int main(int argc, char** argv) {
 		bool bSourceList = false;
 		bool bDestList = false;
 		bool bShowProgress = false;
+		bool bHeaderOnly = false;
 		CommandParser cmdParser(argc, argv);
 		if (cmdParser.ShowHelp() == true)
 			return 0;
@@ -32,26 +29,28 @@ int main(int argc, char** argv) {
 			bDestList = CommandParser::GetCurCommandMap()->find(CommandDef::DestList)->second;
 		if (CommandParser::GetCurCommandMap()->find(CommandDef::ShowProgress) != CommandParser::GetCurCommandMap()->end())
 			bShowProgress = CommandParser::GetCurCommandMap()->find(CommandDef::ShowProgress)->second;
+		if (CommandParser::GetCurCommandMap()->find(CommandDef::HeaderOnly) != CommandParser::GetCurCommandMap()->end())
+			bHeaderOnly = CommandParser::GetCurCommandMap()->find(CommandDef::HeaderOnly)->second;
 		if (bSourceList == true)
 		{
 			if (bFile == true)
 			{
-				metatagEX.ExtractMetatag(argv[argc - 2], argv[argc - 1], Option::File, bDescend ? Option::Descend : Option::Ascend, bShowProgress);
+				metatagEX.ExtractMetatag(argv[argc - 2], argv[argc - 1], Option::File, bDescend ? Option::Descend : Option::Ascend, bShowProgress, bHeaderOnly);
 			}
 			else
 			{
-				metatagEX.ExtractMetatag(argv[argc - 1], std::string(), Option::Console, bDescend ? Option::Descend : Option::Ascend, bShowProgress);
+				metatagEX.ExtractMetatag(argv[argc - 1], std::string(), Option::Console, bDescend ? Option::Descend : Option::Ascend, bShowProgress, bHeaderOnly);
 			}
 		}
 		else if (bDestList == true)
 		{
 			if (bFile == false)
 			{
-				metatagEX.SortMetatag(argv[argc - 2], argv[argc - 1], std::string(), Option::Console, bShowProgress);
+				metatagEX.SortMetatag(argv[argc - 2], argv[argc - 1], std::string(), Option::Console, bShowProgress, bHeaderOnly);
 			}
 			else
 			{
-				metatagEX.SortMetatag(argv[argc - 3], argv[argc - 2], argv[argc - 1], Option::File, bShowProgress);
+				metatagEX.SortMetatag(argv[argc - 3], argv[argc - 2], argv[argc - 1], Option::File, bShowProgress, bHeaderOnly);
 			}
 		}
 	}
