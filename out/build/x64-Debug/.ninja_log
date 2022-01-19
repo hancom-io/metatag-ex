@@ -1,7 +1,0 @@
-# ninja log v5
-12	942	663566360	CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.obj	8db24820b88da04b
-34	1074	663566360	CMakeFiles/MetatagEX.dir/CommandParser.cpp.obj	fd28908eaa1eebfb
-24	1116	663566360	CMakeFiles/MetatagEX.dir/util/Util.cpp.obj	faca228478976577
-1	1289	663566360	CMakeFiles/MetatagEX.dir/main.cpp.obj	95c282a1101bc612
-45	1545	663566361	CMakeFiles/MetatagEX.dir/MetatagEX.cpp.obj	2f6eb40a8efc1e7e
-1549	3310	663566361	MetatagEX.exe	6f56d2a87ec0d4ce

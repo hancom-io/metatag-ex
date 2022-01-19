@@ -1,1 +1,0 @@
-/bin/x86_64-linux-gnu-g++-9  -g  -rdynamic CMakeFiles/MetatagEX.dir/main.cpp.o CMakeFiles/MetatagEX.dir/MetatagEX.cpp.o CMakeFiles/MetatagEX.dir/CommandParser.cpp.o CMakeFiles/MetatagEX.dir/extend/XmlParser.cpp.o CMakeFiles/MetatagEX.dir/util/Util.cpp.o  -o MetatagEX  -lxerces-c -pthread -larchive 
