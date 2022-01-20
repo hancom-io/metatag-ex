@@ -22,6 +22,7 @@ Metatg Extract, Sort
 - dsc(descend) : 내림차순으로 결과를 출력 또는 저장 default는 오름차순
 - pr(progress) : 진행 Percent를 콘솔(터미널)에 출력한다. 쓰레드로 동작한다.
 - doc(document) : 한글 문서 자체에 부여된 메타태그에 대해서만 수행한다.
+- help(help) : 도움말 출력
 
 ====================================================
 
