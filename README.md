@@ -26,9 +26,9 @@ Metatg Extract, Sort
 ====================================================
 
 * 사용된 라이브러리(License)
-- xerces-c(Apache License 2.0)
-- rapidjson(MIT)
-- libarchive(new BSD)
+- xerces-c(Apache License 2.0) : XML 파싱 라이브러리
+- rapidjson(MIT) : json 파싱라이브러리
+- libarchive(new BSD) : 압축 해제 라이브러리
 
 ====================================================
 
