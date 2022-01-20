@@ -31,7 +31,17 @@ Metatg Extract, Sort
 - libarchive(new BSD)
 
 ====================================================
+
 * Contributing
 -요구 기술 : C/C++, Windows Programming, Linux
+
+====================================================
+
+* Install
+- Windows : buildscript.bat 파일 실행 또는 Visual Studio를 이용하여 CMake 열기(CMakeSettings.json 설정되어있음)후 직접 빌드
+- Linux(Ubuntu) : buildscript.sh 실행 또는 직접빌드
+- Windows 라이브러리 경로 : out/install/x64-Debug (CMakeSettings.json 의 installRoot에 설정되어 있음)
+- buildscript.bat 파일 빌드시 컴파일러는 Visual Studio 15 2017 로 설정되어 있음
+- 윈도우에서 빌드하기위해서는 CMake가 설치되어 있어야함.
 
 ====================================================
