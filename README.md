@@ -1,5 +1,5 @@
 # MetatagEX
-Metattg Extract, Sort
+Metatg Extract, Sort
 
 ====================================================
 * 요약
