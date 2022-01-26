@@ -3,3 +3,4 @@ cmake -DCMAKE_INSTALL_PREFIX:PATH=%cd%/out/install/x64-Debug -DCMAKE_GENERATOR_P
 cmake -G "Visual Studio 15 2017" %cd%
 cmake --build %cd% --config Debug
 copy %cd%\out\install\x64-Debug\bin\*.dll %cd%\Debug
+copy %cd%\MetatagEXHelp.txt %cd%\Debug
