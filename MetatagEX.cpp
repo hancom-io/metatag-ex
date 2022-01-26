@@ -448,10 +448,10 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
 			return;
 		}
 
-        TraverseHeader(unzipPath, jsonDoc);
+        TraverseHeader(unzipPath);
         if (bHeaderOnly == false)
         {
-            TraverseSection(unzipPath, jsonDoc);
+            TraverseSection(unzipPath);
         }
         Util::removeDirectory(unzipPath.c_str());
     }
@@ -503,7 +503,7 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
         ofs.close();
     }
 }
-void MetatagEX::TraverseHeader(std::string path, rapidjson::Document& doc)
+void MetatagEX::TraverseHeader(std::string path)
 {
     XmlParser headerParser;
     headerParser.readFile(std::string(path + StringResource::PathSeperator + "Contents" + StringResource::PathSeperator + "header.xml").c_str());
@@ -513,11 +513,11 @@ void MetatagEX::TraverseHeader(std::string path, rapidjson::Document& doc)
     std::list<DOMNode*>::iterator iter = docMetatagList.begin();
     for(iter; iter != docMetatagList.end(); ++iter)
     {
-        ExtractString(*iter, doc);
+        ExtractString(*iter);
     }
 }
 
-void MetatagEX::TraverseSection(std::string path, rapidjson::Document& doc)
+void MetatagEX::TraverseSection(std::string path)
 {
     bool isEndOfSection = false;
     int sectionIndex = 0;
@@ -559,76 +559,76 @@ void MetatagEX::TraverseSection(std::string path, rapidjson::Document& doc)
             std::list<DOMNode*>::iterator iter_tbl = tblList.begin();
             for(iter_tbl; iter_tbl != tblList.end(); ++iter_tbl)
             {
-                TraverseTable(*iter_tbl, doc);
+                TraverseTable(*iter_tbl);
             }
             tblList.clear();
-            TraverseShape(*itr, doc);
+            TraverseShape(*itr);
         }
     }
 }
 
-void MetatagEX::TraverseShape(DOMNode* node, rapidjson::Document& doc)
+void MetatagEX::TraverseShape(DOMNode* node)
 {
     std::list<DOMNode*> shapeList;
     XmlParser::SelectNodes(Defines::NODE_RECT, node, &shapeList);
     std::list<DOMNode*>::iterator iter_shape = shapeList.begin();
     for(iter_shape; iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape, doc);
+        ExtractShape(*iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_PICTURE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape, doc);
+        ExtractShape(*iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_ELLIPSE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape, doc);
+        ExtractShape(*iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_LINE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape, doc);
+        ExtractShape(*iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_ARC, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape, doc);
+        ExtractShape(*iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_POLYGON, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape, doc);
+        ExtractShape(*iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_CURV, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape, doc);
+        ExtractShape(*iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_CONNECTLINE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape, doc);
+        ExtractShape(*iter_shape);
     }
     shapeList.clear();
 }
 
-void MetatagEX::TraverseTable(DOMNode* node, rapidjson::Document& doc)
+void MetatagEX::TraverseTable(DOMNode* node)
 {
     std::list<DOMNode*> tblMetatagList;
     std::list<DOMNode*>::iterator iter_tag;
     XmlParser::SelectNodes(Defines::NODE_PMETATAG, node, &tblMetatagList);
     for(iter_tag = tblMetatagList.begin(); iter_tag != tblMetatagList.end(); ++iter_tag)
     {
-        ExtractString(*iter_tag, doc);
+        ExtractString(*iter_tag);
     }
     std::list<DOMNode*> cellList;
     std::list<DOMNode*>::iterator iter_cell;
@@ -665,26 +665,26 @@ void MetatagEX::TraverseTable(DOMNode* node, rapidjson::Document& doc)
             std::list<DOMNode*>::iterator iter_tbl = tblList.begin();
             for(iter_tbl; iter_tbl != tblList.end(); ++iter_tbl)
             {
-                TraverseTable(*iter_tbl, doc);
+                TraverseTable(*iter_tbl);
             }
             tblList.clear();
-            TraverseShape(*itr, doc);
+            TraverseShape(*itr);
         }
     }
 }
 
-void MetatagEX::ExtractShape(DOMNode* node, rapidjson::Document& doc)
+void MetatagEX::ExtractShape(DOMNode* node)
 {
     std::list<DOMNode*> shapeMetatagList;
     std::list<DOMNode*>::iterator iter_tag;
     XmlParser::SelectNodes(Defines::NODE_PMETATAG, node, &shapeMetatagList);
     for(iter_tag = shapeMetatagList.begin(); iter_tag != shapeMetatagList.end(); ++iter_tag)
     {
-        ExtractString(*iter_tag, doc);
+        ExtractString(*iter_tag);
     }
 }
 
-void MetatagEX::ExtractString(DOMNode* node, rapidjson::Document& doc)
+void MetatagEX::ExtractString(DOMNode* node)
 {
     std::u16string contents;
     contents.assign(reinterpret_cast<const char16_t*>(node->getTextContent()));

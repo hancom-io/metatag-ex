@@ -82,10 +82,10 @@ class MetatagEX
         void SearchString(std::string filePath, DOMNode* node);
         void SortShape(DOMNode* node, std::string filePath);
         void SortTable(DOMNode* node, std::string filePath);
-        void TraverseHeader(std::string path, rapidjson::Document& doc);
-        void TraverseSection(std::string path, rapidjson::Document& doc);
-        void TraverseTable(DOMNode* node, rapidjson::Document& doc);
-        void TraverseShape(DOMNode* node, rapidjson::Document& doc);
-        void ExtractShape(DOMNode* node, rapidjson::Document& doc);
-        void ExtractString(DOMNode* node, rapidjson::Document& doc);
+        void TraverseHeader(std::string path);
+        void TraverseSection(std::string path);
+        void TraverseTable(DOMNode* node);
+        void TraverseShape(DOMNode* node);
+        void ExtractShape(DOMNode* node);
+        void ExtractString(DOMNode* node);
 };
