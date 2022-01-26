@@ -75,6 +75,9 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
         std::regex reg;
         try
         {
+            if (regexStr.find(".hwpx") == std::string::npos)
+                regexStr.append(".hwpx");
+
             reg = std::regex(regexStr);
         }
         catch(std::regex_error::exception e)
@@ -396,6 +399,9 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
         std::regex reg;
         try
         {
+            if (regexStr.find(".hwpx") == std::string::npos)
+                regexStr.append(".hwpx");
+            
             reg = std::regex(regexStr);
         }
         catch(std::regex_error::exception e)
