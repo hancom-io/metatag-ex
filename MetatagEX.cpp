@@ -46,7 +46,7 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
     rapidjson::IStreamWrapper isw(ifs);
     jsonDoc.ParseStream(isw);
     rapidjson::StringBuffer buffer {};
-    rapidjson::Writer<rapidjson::StringBuffer> writer { buffer };
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer { buffer };
     jsonDoc.Accept(writer);
 
     if(jsonDoc.HasParseError())
@@ -163,7 +163,7 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
     }
 }
 
-void MetatagEX::SearchHeader(std::string path, std::string filePath)
+void MetatagEX::SearchHeader(std::string path, std::string srcfilePath)
 {
     XmlParser headerParser;
     headerParser.readFile(std::string(path + StringResource::PathSeperator + "Contents" + StringResource::PathSeperator + "header.xml").c_str());
@@ -173,11 +173,11 @@ void MetatagEX::SearchHeader(std::string path, std::string filePath)
     std::list<DOMNode*>::iterator iter = docMetatagList.begin();
     for(iter; iter != docMetatagList.end(); ++iter)
     {
-        SearchString(filePath, *iter);
+        SearchString(srcfilePath, *iter);
     }
 }
 
-void MetatagEX::SearchString(std::string filePath, DOMNode* node)
+void MetatagEX::SearchString(std::string srcfilePath, DOMNode* node)
 {
     std::u16string contents;
     contents.assign(reinterpret_cast<const char16_t*>(node->getTextContent()));
@@ -194,11 +194,11 @@ void MetatagEX::SearchString(std::string filePath, DOMNode* node)
         {
 #ifdef OS_UNIX
             char fullPath[PATH_MAX];
-            realpath(filePath.c_str(), fullPath);
+            realpath(srcfilePath.c_str(), fullPath);
 #else // OS_UNIX
 			char fullPath[MAX_PATH];
 			char* fileName;
-			GetFullPathName(filePath.c_str(), MAX_PATH, fullPath, &fileName);
+			GetFullPathName(srcfilePath.c_str(), MAX_PATH, fullPath, &fileName);
 #endif
 			MetatagEX::GetSortedMetatag()->push_back(make_pair(fullPath, *iter_find));
         }
@@ -210,7 +210,7 @@ void MetatagEX::SearchString(std::string filePath, DOMNode* node)
     }
 }
 
-void MetatagEX::SearchSection(std::string path, std::string filePath)
+void MetatagEX::SearchSection(std::string path, std::string srcfilePath)
 {
     bool isEndOfSection = false;
     int sectionIndex = 0;
@@ -252,22 +252,22 @@ void MetatagEX::SearchSection(std::string path, std::string filePath)
             std::list<DOMNode*>::iterator iter_tbl = tblList.begin();
             for(iter_tbl; iter_tbl != tblList.end(); ++iter_tbl)
             {
-                SortTable(*iter_tbl, filePath);
+                SortTable(*iter_tbl, srcfilePath);
             }
             tblList.clear();
-            SortShape(*itr, filePath);
+            SortShape(*itr, srcfilePath);
         }
     }
 }
 
-void MetatagEX::SortTable(DOMNode* node, std::string filePath)
+void MetatagEX::SortTable(DOMNode* node, std::string srcfilePath)
 {
     std::list<DOMNode*> tblMetatagList;
     std::list<DOMNode*>::iterator iter_tag;
     XmlParser::SelectNodes(Defines::NODE_PMETATAG, node, &tblMetatagList);
     for(iter_tag = tblMetatagList.begin(); iter_tag != tblMetatagList.end(); ++iter_tag)
     {
-        SearchString(filePath, *iter_tag);
+        SearchString(srcfilePath, *iter_tag);
     }
     std::list<DOMNode*> cellList;
     std::list<DOMNode*>::iterator iter_cell;
@@ -292,11 +292,11 @@ void MetatagEX::SortTable(DOMNode* node, std::string filePath)
                 {
 #ifdef OS_UNIX
                     char fullPath[PATH_MAX];
-                    realpath(filePath.c_str(), fullPath);
+                    realpath(srcfilePath.c_str(), fullPath);
 #else // OS_UNIX
 					char fullPath[MAX_PATH];
 					char* fileName;
-					GetFullPathName(filePath.c_str(), MAX_PATH, fullPath, &fileName);
+					GetFullPathName(srcfilePath.c_str(), MAX_PATH, fullPath, &fileName);
 #endif
 					MetatagEX::GetSortedMetatag()->push_back(make_pair(fullPath, *iter_find));
                 }
@@ -318,64 +318,64 @@ void MetatagEX::SortTable(DOMNode* node, std::string filePath)
             std::list<DOMNode*>::iterator iter_tbl = tblList.begin();
             for(iter_tbl; iter_tbl != tblList.end(); ++iter_tbl)
             {
-                SortTable(*iter_tbl, filePath);
+                SortTable(*iter_tbl, srcfilePath);
             }
             tblList.clear();
-            SortShape(*itr, filePath);
+            SortShape(*itr, srcfilePath);
         }
     }
 }
 
-void MetatagEX::SortShape(DOMNode* node, std::string filePath)
+void MetatagEX::SortShape(DOMNode* node, std::string srcfilePath)
 {
     std::list<DOMNode*> shapeList;
     XmlParser::SelectNodes(Defines::NODE_RECT, node, &shapeList);
     std::list<DOMNode*>::iterator iter_shape = shapeList.begin();
     for(iter_shape; iter_shape != shapeList.end(); ++iter_shape)
     {
-        SearchString(filePath, *iter_shape);
+        SearchString(srcfilePath, *iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_PICTURE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        SearchString(filePath, *iter_shape);
+        SearchString(srcfilePath, *iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_ELLIPSE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        SearchString(filePath, *iter_shape);
+        SearchString(srcfilePath, *iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_LINE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        SearchString(filePath, *iter_shape);
+        SearchString(srcfilePath, *iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_ARC, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        SearchString(filePath, *iter_shape);
+        SearchString(srcfilePath, *iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_POLYGON, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        SearchString(filePath, *iter_shape);
+        SearchString(srcfilePath, *iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_CURV, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        SearchString(filePath, *iter_shape);
+        SearchString(srcfilePath, *iter_shape);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_CONNECTLINE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        SearchString(filePath, *iter_shape);
+        SearchString(srcfilePath, *iter_shape);
     }
     shapeList.clear();
 }
@@ -448,10 +448,10 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
 			return;
 		}
 
-        TraverseHeader(unzipPath);
+        TraverseHeader(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
         if (bHeaderOnly == false)
         {
-            TraverseSection(unzipPath);
+            TraverseSection(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
         }
         Util::removeDirectory(unzipPath.c_str());
     }
@@ -464,46 +464,41 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
     // Order
     if(dsc == Option::Descend)
     {
-        std::sort(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end(), std::greater<std::u16string>());
+        std::sort(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end(), std::greater<std::pair<std::string, std::u16string>>());
         std::unique(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end());
     }
     else
     {
-        std::sort(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end(), std::less<std::u16string>());
+        std::sort(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end(), std::less<std::pair<std::string, std::u16string>>());
         std::unique(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end());
     }
 
-    std::vector<std::u16string>::iterator iter;
+    std::vector<std::pair<std::string, std::u16string>>::iterator iter;
     if(option == Option::Console)
     {
         for(iter = MetatagEX::GetMetatagContainer()->begin(); iter != MetatagEX::GetMetatagContainer()->end(); ++iter)
         {
-            char valName[50] = {0, };
-            snprintf(valName, sizeof(char) * 50, "MetaTag%d", GetTagIndex());
-            std::cout << valName << " : " << Util::utf16_to_string(*iter) << endl;
+            std::cout << Util::utf16_to_string(iter->second) << " : " << iter->first << endl;
         }
     }
     else if(option == Option::File)
     {
         for(iter = MetatagEX::GetMetatagContainer()->begin(); iter != MetatagEX::GetMetatagContainer()->end(); ++iter)
         {
-            char keyName[50] = {0, };
-            snprintf(keyName, sizeof(char) * 50, "MetaTag%d", GetTagIndex());
             auto& allocator = jsonDoc.GetAllocator();
-            rapidjson::Value key;
-            key.SetString(keyName, allocator);
-            rapidjson::Value val(Util::utf16_to_string(*iter).c_str(), allocator);
+            rapidjson::Value key(Util::utf16_to_string(iter->second).c_str(), allocator);
+            rapidjson::Value val(iter->first.c_str(), allocator);
             jsonDoc.AddMember(key, val, allocator);
         }
         std::ofstream ofs(outputPath);
         rapidjson::OStreamWrapper osw(ofs);
 
-        rapidjson::Writer<rapidjson::OStreamWrapper> writer(osw);
+        rapidjson::PrettyWriter<rapidjson::OStreamWrapper> writer(osw);
         jsonDoc.Accept(writer);
         ofs.close();
     }
 }
-void MetatagEX::TraverseHeader(std::string path)
+void MetatagEX::TraverseHeader(std::string path, std::string srcfilePath)
 {
     XmlParser headerParser;
     headerParser.readFile(std::string(path + StringResource::PathSeperator + "Contents" + StringResource::PathSeperator + "header.xml").c_str());
@@ -513,11 +508,11 @@ void MetatagEX::TraverseHeader(std::string path)
     std::list<DOMNode*>::iterator iter = docMetatagList.begin();
     for(iter; iter != docMetatagList.end(); ++iter)
     {
-        ExtractString(*iter);
+        ExtractString(srcfilePath, *iter);
     }
 }
 
-void MetatagEX::TraverseSection(std::string path)
+void MetatagEX::TraverseSection(std::string path, std::string srcfilePath)
 {
     bool isEndOfSection = false;
     int sectionIndex = 0;
@@ -559,76 +554,76 @@ void MetatagEX::TraverseSection(std::string path)
             std::list<DOMNode*>::iterator iter_tbl = tblList.begin();
             for(iter_tbl; iter_tbl != tblList.end(); ++iter_tbl)
             {
-                TraverseTable(*iter_tbl);
+                TraverseTable(*iter_tbl, srcfilePath);
             }
             tblList.clear();
-            TraverseShape(*itr);
+            TraverseShape(*itr, srcfilePath);
         }
     }
 }
 
-void MetatagEX::TraverseShape(DOMNode* node)
+void MetatagEX::TraverseShape(DOMNode* node, std::string srcfilePath)
 {
     std::list<DOMNode*> shapeList;
     XmlParser::SelectNodes(Defines::NODE_RECT, node, &shapeList);
     std::list<DOMNode*>::iterator iter_shape = shapeList.begin();
     for(iter_shape; iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape);
+        ExtractShape(*iter_shape, srcfilePath);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_PICTURE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape);
+        ExtractShape(*iter_shape, srcfilePath);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_ELLIPSE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape);
+        ExtractShape(*iter_shape, srcfilePath);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_LINE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape);
+        ExtractShape(*iter_shape, srcfilePath);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_ARC, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape);
+        ExtractShape(*iter_shape, srcfilePath);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_POLYGON, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape);
+        ExtractShape(*iter_shape, srcfilePath);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_CURV, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape);
+        ExtractShape(*iter_shape, srcfilePath);
     }
     shapeList.clear();
     XmlParser::SelectNodes(Defines::NODE_CONNECTLINE, node, &shapeList);
     for(iter_shape = shapeList.begin(); iter_shape != shapeList.end(); ++iter_shape)
     {
-        ExtractShape(*iter_shape);
+        ExtractShape(*iter_shape, srcfilePath);
     }
     shapeList.clear();
 }
 
-void MetatagEX::TraverseTable(DOMNode* node)
+void MetatagEX::TraverseTable(DOMNode* node, std::string srcfilePath)
 {
     std::list<DOMNode*> tblMetatagList;
     std::list<DOMNode*>::iterator iter_tag;
     XmlParser::SelectNodes(Defines::NODE_PMETATAG, node, &tblMetatagList);
     for(iter_tag = tblMetatagList.begin(); iter_tag != tblMetatagList.end(); ++iter_tag)
     {
-        ExtractString(*iter_tag);
+        ExtractString(srcfilePath, *iter_tag);
     }
     std::list<DOMNode*> cellList;
     std::list<DOMNode*>::iterator iter_cell;
@@ -646,8 +641,16 @@ void MetatagEX::TraverseTable(DOMNode* node)
                 endpos = metaTagsStr.find("\"", pos);
             while(pos != std::string::npos)
             {
+#ifdef OS_UNIX
+                char fullPath[PATH_MAX];
+                realpath(srcfilePath.c_str(), fullPath);
+#else // OS_UNIX
+                char fullPath[MAX_PATH];
+                char* fileName;
+                GetFullPathName(srcfilePath.c_str(), MAX_PATH, fullPath, &fileName);
+#endif
                 std::string token = metaTagsStr.substr(pos, endpos - pos);
-                MetatagEX::GetMetatagContainer()->push_back(Util::string_to_utf16(token));
+                MetatagEX::GetMetatagContainer()->push_back(std::make_pair(fullPath, Util::string_to_utf16(token)));
                 pos = metaTagsStr.find("#", endpos);
                 endpos = metaTagsStr.find(",", pos);
                 if(endpos == std::string::npos)
@@ -665,26 +668,26 @@ void MetatagEX::TraverseTable(DOMNode* node)
             std::list<DOMNode*>::iterator iter_tbl = tblList.begin();
             for(iter_tbl; iter_tbl != tblList.end(); ++iter_tbl)
             {
-                TraverseTable(*iter_tbl);
+                TraverseTable(*iter_tbl, srcfilePath);
             }
             tblList.clear();
-            TraverseShape(*itr);
+            TraverseShape(*itr, srcfilePath);
         }
     }
 }
 
-void MetatagEX::ExtractShape(DOMNode* node)
+void MetatagEX::ExtractShape(DOMNode* node, std::string srcfilePath)
 {
     std::list<DOMNode*> shapeMetatagList;
     std::list<DOMNode*>::iterator iter_tag;
     XmlParser::SelectNodes(Defines::NODE_PMETATAG, node, &shapeMetatagList);
     for(iter_tag = shapeMetatagList.begin(); iter_tag != shapeMetatagList.end(); ++iter_tag)
     {
-        ExtractString(*iter_tag);
+        ExtractString(srcfilePath, *iter_tag);
     }
 }
 
-void MetatagEX::ExtractString(DOMNode* node)
+void MetatagEX::ExtractString(std::string srcfilePath, DOMNode* node)
 {
     std::u16string contents;
     contents.assign(reinterpret_cast<const char16_t*>(node->getTextContent()));
@@ -694,8 +697,16 @@ void MetatagEX::ExtractString(DOMNode* node)
         endpos = contents.find(u"\"", pos);
     while(pos != std::string::npos)
     {
+#ifdef OS_UNIX
+        char fullPath[PATH_MAX];
+        realpath(srcfilePath.c_str(), fullPath);
+#else // OS_UNIX
+        char fullPath[MAX_PATH];
+        char* fileName;
+        GetFullPathName(srcfilePath.c_str(), MAX_PATH, fullPath, &fileName);
+#endif
         std::u16string token = contents.substr(pos, endpos - pos);
-        MetatagEX::GetMetatagContainer()->push_back(token);
+        MetatagEX::GetMetatagContainer()->push_back(std::make_pair(fullPath, token));
         pos = contents.find(u"#", endpos);
         endpos = contents.find(u",", pos);
         if(endpos == std::string::npos)

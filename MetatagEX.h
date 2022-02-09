@@ -65,9 +65,9 @@ class MetatagEX
             return &findMetatagVector;
         }
 
-        static std::vector<std::u16string>* GetMetatagContainer()
+        static std::vector<std::pair<std::string, std::u16string>>* GetMetatagContainer()
         {
-            static std::vector<std::u16string> metatagContainer;
+            static std::vector<std::pair<std::string, std::u16string>> metatagContainer;
 
             return &metatagContainer;
         }
@@ -77,15 +77,15 @@ class MetatagEX
         static void CalcPercentProc(int nFileCnt);
 
     private:
-        void SearchHeader(std::string path, std::string filePath);
-        void SearchSection(std::string path, std::string filePath);
-        void SearchString(std::string filePath, DOMNode* node);
-        void SortShape(DOMNode* node, std::string filePath);
-        void SortTable(DOMNode* node, std::string filePath);
-        void TraverseHeader(std::string path);
-        void TraverseSection(std::string path);
-        void TraverseTable(DOMNode* node);
-        void TraverseShape(DOMNode* node);
-        void ExtractShape(DOMNode* node);
-        void ExtractString(DOMNode* node);
+        void SearchHeader(std::string path, std::string srcfilePath);
+        void SearchSection(std::string path, std::string srcfilePath);
+        void SearchString(std::string srcfilePath, DOMNode* node);
+        void SortShape(DOMNode* node, std::string srcfilePath);
+        void SortTable(DOMNode* node, std::string srcfilePath);
+        void TraverseHeader(std::string path, std::string srcfilePath);
+        void TraverseSection(std::string path, std::string srcfilePath);
+        void TraverseTable(DOMNode* node, std::string srcfilePath);
+        void TraverseShape(DOMNode* node, std::string srcfilePath);
+        void ExtractShape(DOMNode* node, std::string srcfilePath);
+        void ExtractString(std::string srcfilePath, DOMNode* node);
 };
