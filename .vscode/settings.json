@@ -59,6 +59,7 @@
         "filesystem": "cpp",
         "iomanip": "cpp",
         "set": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "mutex": "cpp"
     }
 }

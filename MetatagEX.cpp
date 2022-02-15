@@ -464,32 +464,59 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
     // Order
     if(dsc == Option::Descend)
     {
-        std::sort(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end(), std::greater<std::pair<std::string, std::u16string>>());
+        std::sort(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end(), std::greater<std::pair<std::u16string, std::map<std::string, std::string>>>());
         std::unique(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end());
     }
     else
     {
-        std::sort(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end(), std::less<std::pair<std::string, std::u16string>>());
+        std::sort(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end(), std::less<std::pair<std::u16string, std::map<std::string, std::string>>>());
         std::unique(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end());
     }
 
-    std::vector<std::pair<std::string, std::u16string>>::iterator iter;
+    std::vector<std::pair<std::u16string, std::map<std::string, std::string>>>::iterator iter;
     if(option == Option::Console)
     {
         for(iter = MetatagEX::GetMetatagContainer()->begin(); iter != MetatagEX::GetMetatagContainer()->end(); ++iter)
         {
-            std::cout << Util::utf16_to_string(iter->second) << " : " << iter->first << endl;
+            std::cout << "tag : " << Util::utf16_to_string(iter->first) << endl;
+            if(iter->second.find("path") != iter->second.end())
+            {
+                std::cout << "path : " << iter->second["path"] << endl;
+            }
+            if(iter->second.find("object") != iter->second.end())
+            {
+                std::cout << "object : " << iter->second["object"] << endl;
+            }
+            std::cout << std::endl;
         }
     }
     else if(option == Option::File)
     {
+        rapidjson::Value valueArray(rapidjson::kArrayType);
+        valueArray.SetArray();
+        auto& allocator = jsonDoc.GetAllocator();
         for(iter = MetatagEX::GetMetatagContainer()->begin(); iter != MetatagEX::GetMetatagContainer()->end(); ++iter)
         {
-            auto& allocator = jsonDoc.GetAllocator();
-            rapidjson::Value key(Util::utf16_to_string(iter->second).c_str(), allocator);
-            rapidjson::Value val(iter->first.c_str(), allocator);
-            jsonDoc.AddMember(key, val, allocator);
+            rapidjson::Value data(rapidjson::kObjectType);
+            data.SetObject();
+            rapidjson::Value keyTag("tag", allocator);
+            rapidjson::Value valTag(Util::utf16_to_string(iter->first).c_str(), allocator);
+            data.AddMember(keyTag, valTag, allocator);
+            if(iter->second.find("path") != iter->second.end())
+            {
+                rapidjson::Value keyPath("path", allocator);
+                rapidjson::Value valPath(iter->second["path"].c_str(), allocator);
+                data.AddMember(keyPath, valPath, allocator);
+            }
+            if(iter->second.find("object") != iter->second.end())
+            {
+                rapidjson::Value keyObj("object", allocator);
+                rapidjson::Value valObj(iter->second["object"].c_str(), allocator);
+                data.AddMember(keyObj, valObj, allocator);
+            }   
+            valueArray.PushBack(data, allocator);
         }
+        jsonDoc.AddMember("item", valueArray, allocator);
         std::ofstream ofs(outputPath);
         rapidjson::OStreamWrapper osw(ofs);
 
@@ -508,7 +535,7 @@ void MetatagEX::TraverseHeader(std::string path, std::string srcfilePath)
     std::list<DOMNode*>::iterator iter = docMetatagList.begin();
     for(iter; iter != docMetatagList.end(); ++iter)
     {
-        ExtractString(srcfilePath, *iter);
+        ExtractString(srcfilePath, *iter, "document");
     }
 }
 
@@ -623,7 +650,7 @@ void MetatagEX::TraverseTable(DOMNode* node, std::string srcfilePath)
     XmlParser::SelectNodes(Defines::NODE_PMETATAG, node, &tblMetatagList);
     for(iter_tag = tblMetatagList.begin(); iter_tag != tblMetatagList.end(); ++iter_tag)
     {
-        ExtractString(srcfilePath, *iter_tag);
+        ExtractString(srcfilePath, *iter_tag, "table");
     }
     std::list<DOMNode*> cellList;
     std::list<DOMNode*>::iterator iter_cell;
@@ -650,7 +677,10 @@ void MetatagEX::TraverseTable(DOMNode* node, std::string srcfilePath)
                 GetFullPathName(srcfilePath.c_str(), MAX_PATH, fullPath, &fileName);
 #endif
                 std::string token = metaTagsStr.substr(pos, endpos - pos);
-                MetatagEX::GetMetatagContainer()->push_back(std::make_pair(fullPath, Util::string_to_utf16(token)));
+                std::map<std::string, std::string> tempMap;
+                tempMap.insert(std::make_pair("path", fullPath));
+                tempMap.insert(std::make_pair("object", "table"));
+                MetatagEX::GetMetatagContainer()->push_back(std::make_pair(Util::string_to_utf16(token), tempMap));
                 pos = metaTagsStr.find("#", endpos);
                 endpos = metaTagsStr.find(",", pos);
                 if(endpos == std::string::npos)
@@ -683,11 +713,11 @@ void MetatagEX::ExtractShape(DOMNode* node, std::string srcfilePath)
     XmlParser::SelectNodes(Defines::NODE_PMETATAG, node, &shapeMetatagList);
     for(iter_tag = shapeMetatagList.begin(); iter_tag != shapeMetatagList.end(); ++iter_tag)
     {
-        ExtractString(srcfilePath, *iter_tag);
+        ExtractString(srcfilePath, *iter_tag, "shape");
     }
 }
 
-void MetatagEX::ExtractString(std::string srcfilePath, DOMNode* node)
+void MetatagEX::ExtractString(std::string srcfilePath, DOMNode* node, std::string origin)
 {
     std::u16string contents;
     contents.assign(reinterpret_cast<const char16_t*>(node->getTextContent()));
@@ -706,7 +736,10 @@ void MetatagEX::ExtractString(std::string srcfilePath, DOMNode* node)
         GetFullPathName(srcfilePath.c_str(), MAX_PATH, fullPath, &fileName);
 #endif
         std::u16string token = contents.substr(pos, endpos - pos);
-        MetatagEX::GetMetatagContainer()->push_back(std::make_pair(fullPath, token));
+        std::map<std::string, std::string> tempMap;
+        tempMap.insert(std::make_pair("path", fullPath));
+        tempMap.insert(std::make_pair("object", origin));
+        MetatagEX::GetMetatagContainer()->push_back(std::make_pair(token, tempMap));
         pos = contents.find(u"#", endpos);
         endpos = contents.find(u",", pos);
         if(endpos == std::string::npos)

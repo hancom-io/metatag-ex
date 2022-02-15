@@ -65,9 +65,9 @@ class MetatagEX
             return &findMetatagVector;
         }
 
-        static std::vector<std::pair<std::string, std::u16string>>* GetMetatagContainer()
+        static std::vector<std::pair<std::u16string, std::map<std::string, std::string>>>* GetMetatagContainer()
         {
-            static std::vector<std::pair<std::string, std::u16string>> metatagContainer;
+            static std::vector<std::pair<std::u16string, std::map<std::string, std::string>>> metatagContainer;
 
             return &metatagContainer;
         }
@@ -87,5 +87,5 @@ class MetatagEX
         void TraverseTable(DOMNode* node, std::string srcfilePath);
         void TraverseShape(DOMNode* node, std::string srcfilePath);
         void ExtractShape(DOMNode* node, std::string srcfilePath);
-        void ExtractString(std::string srcfilePath, DOMNode* node);
+        void ExtractString(std::string srcfilePath, DOMNode* node, std::string origin);
 };
