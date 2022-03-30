@@ -1,4 +1,4 @@
-/*-
+﻿/*-
  * Copyright (c) 2003-2008 Tim Kientzle
  * Copyright (c) 2016 Martin Matuska
  * All rights reserved.

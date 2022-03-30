@@ -1,4 +1,4 @@
-// This file is generated, don't edit it!!
+﻿// This file is generated, don't edit it!!
 
 #if !defined(XERCESC_INCLUDE_GUARD_ERRHEADER_XMLExcepts)
 #define XERCESC_INCLUDE_GUARD_ERRHEADER_XMLExcepts

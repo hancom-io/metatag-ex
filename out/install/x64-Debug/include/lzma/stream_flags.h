@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/stream_flags.h
  * \brief       .xz Stream Header and Stream Footer encoder and decoder
  */

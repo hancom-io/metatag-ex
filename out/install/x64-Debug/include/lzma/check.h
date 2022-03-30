@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/check.h
  * \brief       Integrity checks
  */

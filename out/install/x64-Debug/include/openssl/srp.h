@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2004-2018 The OpenSSL Project Authors. All Rights Reserved.
  * Copyright (c) 2004, EdelKey Project. All Rights Reserved.
  *

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/block.h
  * \brief       .xz Block handling
  */

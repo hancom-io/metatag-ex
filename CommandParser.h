@@ -1,4 +1,4 @@
-#include <vector>
+﻿#include <vector>
 #include <map>
 #include <iostream>
 #ifndef OS_UNIX
@@ -32,9 +32,8 @@ class CommandParser
 public:
 	CommandParser(int inputArgs, char** inputArr);
 	~CommandParser();
-	// �Է����� ���� ���ڿ��� �Ľ��Ѵ�.
+
 	bool ParsingInput();
-	// inputStr�� �ش��ϴ� ���ڰ� ������� ��ι��ڼ��� �����Ѵ�.
 	bool ConfigureOption(const std::string& inputStr, int pathCnt);
 	bool ShowHelp();
 

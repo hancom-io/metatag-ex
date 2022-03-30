@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/filter.h
  * \brief       Common filter related types and functions
  */

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/vli.h
  * \brief       Variable-length integer handling
  *

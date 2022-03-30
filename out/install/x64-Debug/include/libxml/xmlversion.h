@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Summary: compile-time version information
  * Description: compile-time version information for the XML library
  *

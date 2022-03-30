@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/bcj.h
  * \brief       Branch/Call/Jump conversion filters
  */

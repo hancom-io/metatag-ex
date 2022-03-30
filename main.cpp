@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include "MetatagEX.h"
 #include "CommandParser.h"
 int main(int argc, char** argv) {

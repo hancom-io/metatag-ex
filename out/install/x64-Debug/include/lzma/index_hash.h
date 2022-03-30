@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/index_hash.h
  * \brief       Validate Index by using a hash function
  *

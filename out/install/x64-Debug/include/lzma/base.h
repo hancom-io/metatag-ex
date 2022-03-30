@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/base.h
  * \brief       Data types and functions used in many places in liblzma API
  */

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/version.h
  * \brief       Version number
  */

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/container.h
  * \brief       File formats
  */

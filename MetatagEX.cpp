@@ -1,4 +1,4 @@
-#include "MetatagEX.h"
+﻿#include "MetatagEX.h"
 #include <regex>
 #ifdef OS_UNIX
 #include <dirent.h>

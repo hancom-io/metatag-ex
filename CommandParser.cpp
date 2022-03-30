@@ -1,4 +1,4 @@
-#include <fstream>
+﻿#include <fstream>
 #include "CommandParser.h"
 #include "EXdefine.h" // StringResource
 #ifdef OS_UNIX
@@ -78,7 +78,6 @@ bool CommandParser::ShowHelp()
 
 bool CommandParser::ParsingInput()
 {
-	// ConfigurePathCnt �� Ŀ�ǵ带 �м��Ͽ� ���° ���ڿ����� ������� �ľ��ؾ��Ѵ�.
 	if (ConfigureOption(CommandWord::GetSourceList, 1) == false)
 	{
 		if (ConfigureOption(CommandWord::GetDestList, 2) == false)
@@ -109,14 +108,12 @@ bool CommandParser::ParsingInput()
 	return true;
 }
 
-// Option ���� Parsing �Ѵ�
 bool CommandParser::ConfigureOption(const std::string& inputStr, int pathCnt)
 {
 	bool ret = false;
 	std::vector<const char*>::iterator iter = m_inputStrVector.begin();
 	for (iter; iter != m_inputStrVector.end(); ++iter)
 	{
-		// Path ���ڿ��� ����� �����Ѵ�.
 		if (inputStr.compare(*iter) == 0)
 		{
 			m_nPathCnt = pathCnt;

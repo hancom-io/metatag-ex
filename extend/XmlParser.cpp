@@ -1,4 +1,4 @@
-#include <xercesc/dom/DOMDocument.hpp>
+﻿#include <xercesc/dom/DOMDocument.hpp>
 #include <xercesc/dom/DOMDocumentType.hpp>
 #include <xercesc/dom/DOMElement.hpp>
 #include <xercesc/dom/DOMImplementation.hpp>
@@ -30,7 +30,7 @@ XmlParser::XmlParser()
         }
         objectCount++;
     }
-    catch(XMLException& e)
+    catch (XMLException& e)
     {
         char* message = XMLString::transcode(e.getMessage());
         cerr << "XML toolkit initialization error: " << message << endl;
@@ -52,12 +52,12 @@ XmlParser::~XmlParser()
     try
     {
         objectCount--;
-        
+
         if (objectCount <= 0) {
             XMLPlatformUtils::Terminate();
         }
     }
-    catch(XMLException& e)
+    catch (XMLException& e)
     {
         char* message = XMLString::transcode(e.getMessage());
         cerr << "XML ttolkit teardown error: " << message << endl;
@@ -78,7 +78,7 @@ bool XmlParser::CrateDocument(const std::string& rootName)
     XMLCh* xmlStringPtr;
 
     xmlStringPtr = XMLString::transcode("");
-    DOMImplementation* impl =  DOMImplementationRegistry::getDOMImplementation(xmlStringPtr);
+    DOMImplementation* impl = DOMImplementationRegistry::getDOMImplementation(xmlStringPtr);
     XMLString::release(&xmlStringPtr);
     xmlStringPtr = NULL;
     if (impl == NULL)
@@ -101,7 +101,7 @@ bool XmlParser::CrateDocument(const std::string& rootName)
         XMLString::release(&xmlStringPtr);
         xmlStringPtr = NULL;
     }
-    catch(XMLException& e) {
+    catch (XMLException& e) {
         Release();
 
         char* message = XMLString::transcode(e.getMessage());
@@ -143,18 +143,16 @@ void XmlParser::readFile(const std::string& configFile)
         xmlDoc = m_XercesParser->getDocument();
         if (xmlDoc != NULL) {
             rootElement = xmlDoc->getDocumentElement();
-             if(rootElement) {
+            if (rootElement) {
 
-             }
-             else {
+            } else {
 
-             }
-        }
-        else {
+            }
+        } else {
 
         }
     }
-    catch(xercesc::XMLException& e)
+    catch (xercesc::XMLException& e)
     {
 
     }
@@ -182,23 +180,23 @@ DOMElement* XmlParser::CreateElement(const std::u16string& nodeName)
 
 DOMNode* XmlParser::SelectSingleNode(string nodeName, DOMNode* node)
 {
-    if (nodeName.empty() == true || node == NULL)  {
+    if (nodeName.empty() == true || node == NULL) {
         return NULL;
     }
 
     std::string name = ConvertToString(node->getNodeName());
-    if(nodeName.compare(name) == 0)
+    if (nodeName.compare(name) == 0)
     {
         return node;
     }
     DOMNodeList* list = node->getChildNodes();
     const XMLSize_t nodeCount = list->getLength();
     DOMNode* retNode = NULL;
-    for(XMLSize_t i = 0; i < nodeCount; ++i)
+    for (XMLSize_t i = 0; i < nodeCount; ++i)
     {
         DOMNode* childNode = list->item(i);
         name = ConvertToString(childNode->getNodeName());
-        if(nodeName.compare(name) == 0)
+        if (nodeName.compare(name) == 0)
         {
             retNode = childNode;
             break;
@@ -209,29 +207,28 @@ DOMNode* XmlParser::SelectSingleNode(string nodeName, DOMNode* node)
 
 void XmlParser::SelectNodes(string nodeName, DOMNode* node, std::list<DOMNode*>* nodelist)
 {
-    if (nodeName.empty() == true || node == NULL || nodelist == NULL)  {
+    if (nodeName.empty() == true || node == NULL || nodelist == NULL) {
         return;
     }
 
     string name = ConvertToString(node->getNodeName());
-    if(nodeName.compare(name) == 0)
+    if (nodeName.compare(name) == 0)
     {
         nodelist->push_back(node);
     }
     DOMNodeList* list = node->getChildNodes();
     const XMLSize_t nodeCount = list->getLength();
-    for(XMLSize_t i = 0; i < nodeCount; ++i)
+    for (XMLSize_t i = 0; i < nodeCount; ++i)
     {
         DOMNode* childNode = list->item(i);
         name = ConvertToString(childNode->getNodeName());
-        if(nodeName.compare(name) == 0)
+        if (nodeName.compare(name) == 0)
         {
             nodelist->push_back(childNode);
-        }
-        else if(nodeName.find(name) != std::string::npos)
+        } else if (nodeName.find(name) != std::string::npos)
         {
-			if (nodeName.find('/') == std::string::npos)
-				return;
+            if (nodeName.find('/') == std::string::npos)
+                return;
             string temp(nodeName.begin() + nodeName.find_first_of('/') + 1, nodeName.end());
             SelectNodes(temp, childNode, nodelist);
         }
@@ -244,12 +241,12 @@ bool XmlParser::ConvertToBool(const XMLCh* xmlString, bool defaultValue /* = fal
     char* transStr = XMLString::transcode(xmlString);
     if (transStr != NULL) {
 #ifdef OS_UNIX
-		value = (strcasecmp(transStr, "true") == 0) ? true : false;
+        value = (strcasecmp(transStr, "true") == 0) ? true : false;
 #else
-		value = (_stricmp(transStr, "true") == 0) ? true : false;
+        value = (_stricmp(transStr, "true") == 0) ? true : false;
 #endif
 
-        XMLString::release(&transStr); 
+        XMLString::release(&transStr);
     }
 
     return value;
@@ -297,7 +294,7 @@ xercesc::XercesDOMParser* XmlParser::GetXercesParser()
 }
 
 DOMElement* XmlParser::GetRootElement()
-{ 
+{
     return rootElement;
 }
 
@@ -305,16 +302,16 @@ void XmlParser::WriteXML(const std::string& filePath)
 {
     //Return the first registered implementation that has the desired features. In this case, we are after a DOM implementation that has the LS feature... or Load/Save. 
     XMLCh* xmlStrFeatures = XMLString::transcode("LS");
-    DOMImplementation *implementation = DOMImplementationRegistry::getDOMImplementation(xmlStrFeatures); 
+    DOMImplementation *implementation = DOMImplementationRegistry::getDOMImplementation(xmlStrFeatures);
     XMLString::release(&xmlStrFeatures);
     xmlStrFeatures = NULL;
 
     // Create a DOMLSSerializer which is used to serialize a DOM tree into an XML document. 
-    DOMLSSerializer *serializer = ((DOMImplementationLS*)implementation)->createLSSerializer(); 
+    DOMLSSerializer *serializer = ((DOMImplementationLS*)implementation)->createLSSerializer();
 
     // Make the output more human readable by inserting line feeds. 
-    if (serializer->getDomConfig()->canSetParameter(XMLUni::fgDOMWRTFormatPrettyPrint, true)) 
-        serializer->getDomConfig()->setParameter(XMLUni::fgDOMWRTFormatPrettyPrint, true); 
+    if (serializer->getDomConfig()->canSetParameter(XMLUni::fgDOMWRTFormatPrettyPrint, true))
+        serializer->getDomConfig()->setParameter(XMLUni::fgDOMWRTFormatPrettyPrint, true);
 
     // The end-of-line sequence of characters to be used in the XML being written out.  
     XMLCh* xmlStrLinefeed = XMLString::transcode("\r\n");
@@ -323,25 +320,25 @@ void XmlParser::WriteXML(const std::string& filePath)
     xmlStrLinefeed = NULL;
 
     // Convert the path into Xerces compatible XMLCh*. 
-    XMLCh *tempFilePath = XMLString::transcode(filePath.c_str()); 
+    XMLCh *tempFilePath = XMLString::transcode(filePath.c_str());
 
     // Specify the target for the XML output. 
-    XMLFormatTarget *formatTarget = new LocalFileFormatTarget(tempFilePath); 
+    XMLFormatTarget *formatTarget = new LocalFileFormatTarget(tempFilePath);
 
     // Create a new empty output destination object. 
-    DOMLSOutput *output = ((DOMImplementationLS*)implementation)->createLSOutput(); 
+    DOMLSOutput *output = ((DOMImplementationLS*)implementation)->createLSOutput();
 
     // Set the stream to our target. 
-    output->setByteStream(formatTarget); 
+    output->setByteStream(formatTarget);
 
     // Write the serialized output to the destination. 
-    serializer->write(xmlCreatedDoc, output); 
+    serializer->write(xmlCreatedDoc, output);
 
     // Cleanup. 
-    serializer->release(); 
-    XMLString::release(&tempFilePath); 
-    delete formatTarget; 
-    output->release(); 
+    serializer->release();
+    XMLString::release(&tempFilePath);
+    delete formatTarget;
+    output->release();
 }
 
 

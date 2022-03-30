@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/delta.h
  * \brief       Delta filter
  */

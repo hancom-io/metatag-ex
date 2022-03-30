@@ -1,4 +1,4 @@
-/*-
+﻿/*-
  * Copyright (c) 2003-2010 Tim Kientzle
  * All rights reserved.
  *

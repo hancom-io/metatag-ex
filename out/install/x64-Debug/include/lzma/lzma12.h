@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        lzma/lzma12.h
  * \brief       LZMA1 and LZMA2 filters
  */

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * \file        api/lzma.h
  * \brief       The public API of liblzma data compression library
  *
