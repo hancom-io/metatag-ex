@@ -62,9 +62,9 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
         MetatagEX::GetFindMetatagVector()->push_back(Util::string_to_utf16(itr->value.GetString()));
     }
 
-    vector<std::string> files;
+    std::vector<std::string> files;
     std::string regexStr = Util::getdir(inputPath, files);
-    vector<std::string>::iterator iter_file = files.begin();
+    std::vector<std::string>::iterator iter_file = files.begin();
     std::thread* CountingThread = NULL;
     if(bShowProgress)
     {
@@ -116,7 +116,7 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
 #else
         char path[PATH_MAX];
 #endif
-        sprintf(path, "%s", std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
+        sprintf_s(path, "%s", std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
 		if (Util::extract(path, unzipPath.c_str()) == -1)
 		{
 			std::cout << std::string(path) + StringResource::PathSeperator + *iter_file + StringResource::ExtractionFailed << std::endl;
@@ -441,7 +441,7 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
 #else
         char path[PATH_MAX];
 #endif // OS_UNIX
-        sprintf(path, "%s", std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
+        sprintf_s(path, "%s", std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
 		if (Util::extract(path, unzipPath.c_str()) == -1)
 		{
 			std::cout << std::string(path) + StringResource::PathSeperator + *iter_file + StringResource::ExtractionFailed << std::endl;

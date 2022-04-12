@@ -25,7 +25,6 @@ Thumbs.db
 *.sdf
 *.opensdf
 *.vs
-*.sln
 obj/
 [Bb]in
 [Dd]ebug*/
@@ -53,5 +52,3 @@ tags
 *.cmake
 DartConfiguration.tcl
 CMakeCache.txt
-*.vcxproj
-*.vcxproj.filters

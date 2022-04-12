@@ -163,7 +163,7 @@ std::string Util::trim(const std::string &s) {
 }
 
 std::string Util::wstring_to_string(const wchar_t* wstring) {
-    // sizeof (char16_t) == (wchar_t) �϶�
+    // sizeof (char16_t) == (wchar_t) 일때
 #ifdef OS_UNIX
     return utf16_to_string(reinterpret_cast<const char16_t*>(wstring));
 #else
@@ -284,7 +284,7 @@ std::string Util::getdir(std::string& dir, std::vector<std::string>& files)
         dir = dir.substr(0, dir.find_last_of("\\"));
     }
     char search_path[200];
-    sprintf(search_path, "%s\\*.*", dir.c_str());
+    sprintf_s(search_path, "%s\\*.*", dir.c_str());
     WIN32_FIND_DATA fd;
     HANDLE hFind = ::FindFirstFile(search_path, &fd);
     if (hFind != INVALID_HANDLE_VALUE)
