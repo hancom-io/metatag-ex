@@ -41,6 +41,7 @@
 #include <cstdio>
 #include "./Util.h"
 
+#ifdef OS_UNIX
 int Util::extract(const char* filePath, const char* unzipPath)
 {
     //#ifdef OS_UNIX
@@ -71,18 +72,13 @@ int Util::extract(const char* filePath, const char* unzipPath)
 
     /* Avoid spurious warnings.  One should test for the CAP_CHOWN
      * capability instead but libarchive only does this test: */
-#ifdef OS_UNIX
     if (geteuid() == 0)
         flags |= ARCHIVE_EXTRACT_OWNER;
 
     char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));
     chdir(unzipPath);
-#else
-    char cwd[MAX_PATH];
-    _getcwd(cwd, sizeof(cwd));
-    _chdir(unzipPath);
-#endif
+
     while (archive_read_next_header(aFrom, &entry) == ARCHIVE_OK) {
         status = archive_read_extract(aFrom, entry, flags);
         switch (status) {
@@ -94,17 +90,15 @@ int Util::extract(const char* filePath, const char* unzipPath)
             break;
         }
     }
-#ifdef OS_UNIX
+
     chdir(cwd);
-#else
-    _chdir(cwd);
-#endif
 
     archive_read_close(aFrom);
     archive_read_free(aFrom);
 
     return result;
 }
+#endif
 
 bool Util::IsExistFile(const std::wstring& path)
 {
@@ -167,10 +161,11 @@ std::string Util::wstring_to_string(const wchar_t* wstring) {
 #ifdef OS_UNIX
     return utf16_to_string(reinterpret_cast<const char16_t*>(wstring));
 #else
-    std::wstring wstrTemp(wstring);
-    std::string strTemp;
-    strTemp.assign(wstrTemp.begin(), wstrTemp.end());
-    return strTemp;
+    char strMultibyte[256] = { 0, };
+    int len = WideCharToMultiByte(CP_ACP, 0, wstring, -1, NULL, 0, NULL, NULL);
+    WideCharToMultiByte(CP_ACP, 0, wstring, -1, strMultibyte, len, NULL, NULL);
+
+    return strMultibyte;
 #endif
 }
 
@@ -248,6 +243,18 @@ std::string Util::utf16_to_string(const std::u16string& utf16string) {
     }
     return utf8;
 #endif
+}
+
+std::wstring Util::string_to_wstring(const std::string& str)
+{
+    int strLength = (int)str.length() + 1;
+    int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), strLength, 0, 0);
+
+    wchar_t* pBuf = new wchar_t[len];
+    MultiByteToWideChar(CP_ACP, 0, str.c_str(), strLength, pBuf, len);
+    std::wstring res(pBuf);
+    delete[] pBuf;
+    return res;
 }
 
 std::string Util::getdir(std::string& dir, std::vector<std::string>& files)

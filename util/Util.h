@@ -1,9 +1,7 @@
 ﻿#include <iostream>
 #include <string>
 #include <vector>
-//#ifndef OS_UNIX
-#include <archive.h>
-#include <archive_entry.h>
+
 #ifndef OS_UNIX
 #include <Windows.h>
 #endif
@@ -23,6 +21,7 @@ public:
     static std::string utf16_to_string(const std::u16string& utf16string);
     static std::u16string string_to_utf16(const std::string& str);
     static std::wstring utf16_to_wstring(const std::u16string& utf16string);
+    static std::wstring string_to_wstring(const std::string& str);
 
     static int createDirectory(const std::u16string& path);
 
@@ -30,6 +29,7 @@ public:
     static void emptyDirectory(const char* path);
     static bool isDirectory(const char* path);
     static std::string getdir(std::string& dir, std::vector<std::string>& files);
-
+#ifdef OS_UNIX
     static int extract(const char* filePath, const char* unzipPath);
+#endif
 };

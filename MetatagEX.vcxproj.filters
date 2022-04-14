@@ -12,9 +12,6 @@
     <Filter Include="Util">
       <UniqueIdentifier>{887f5885-11bd-407c-a3b2-086b5f3ec1c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Extend">
-      <UniqueIdentifier>{08e8d797-46cf-480c-9e49-a0228f1a3f69}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="util\Util.cpp">
@@ -28,9 +25,6 @@
     </ClCompile>
     <ClCompile Include="MetatagEX.cpp">
       <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="extend\XmlParser.cpp">
-      <Filter>Extend</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -46,12 +40,6 @@
     <ClInclude Include="MetatagEX.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="extend\XmlParser.h">
-      <Filter>Extend</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="header.xml" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="MetatagEXHelp.txt" />

@@ -83,17 +83,17 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>./../;./;../;$(ProjectDir)out\install\x64-Debug\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../;./;../;$(ProjectDir)out\install\x64-Debug\include\;$(ProjectDir)opensource\hwpx-owpml-model\OWPML\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLApi\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLUtil\;$(ProjectDir)opensource\hwpx-owpml-model\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <FunctionLevelLinking>
       </FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>archive.lib;xerces-c_3D.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)out\install\x64-Debug\bin;$(ProjectDir)out\install\x64-Debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OWPMLd.lib;OWPMLApi.lib;OWPMLUtil.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)out\install\x64-Debug\bin;$(ProjectDir)out\install\x64-Debug\lib;$(ProjectDir)opensource\hwpx-owpml-model\Build\BinDebug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -103,13 +103,14 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>./../;./;../;$(ProjectDir)out\install\x64-Debug\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../;./;../;$(ProjectDir)out\install\x64-Debug\include\;$(ProjectDir)opensource\hwpx-owpml-model\OWPML\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLApi\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLUtil\;$(ProjectDir)opensource\hwpx-owpml-model\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <PreprocessorDefinitions>OS_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(ProjectDir)\out\install\x64-Debug\bin;$(ProjectDir)\out\install\x64-Debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>archive.lib;xerces-c_3D.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)out\install\x64-Debug\bin;$(ProjectDir)out\install\x64-Debug\lib;$(ProjectDir)opensource\hwpx-owpml-model\Build\BinDebug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>archive.lib;xerces-c_3D.lib;OWPMLd.lib;OWPMLApi.lib;OWPMLUtil.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -144,10 +145,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CommandParser.cpp" />
-    <ClCompile Include="extend\XmlParser.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MetatagEX.cpp" />
     <ClCompile Include="util\Util.cpp">
@@ -158,18 +155,11 @@
   <ItemGroup>
     <ClInclude Include="CommandParser.h" />
     <ClInclude Include="EXdefine.h" />
-    <ClInclude Include="extend\XmlParser.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="MetatagEX.h" />
     <ClInclude Include="util\Util.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="header.xml" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="MetatagEXHelp.txt" />

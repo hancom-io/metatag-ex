@@ -8,6 +8,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include "./util/Util.h"
+#ifdef US_UNIX
 #include "./extend/XmlParser.h"
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
@@ -15,6 +16,16 @@
 #include "rapidjson/prettywriter.h"
 #include "rapidjson/istreamwrapper.h"
 #include "rapidjson/ostreamwrapper.h"
+#else
+#include "./opensource/rapidjson/include/rapidjson/document.h"
+#include "./opensource/rapidjson/include/rapidjson/document.h"
+#include "./opensource/rapidjson/include/rapidjson/writer.h"
+#include "./opensource/rapidjson/include/rapidjson/stringbuffer.h"
+#include "./opensource/rapidjson/include/rapidjson/prettywriter.h"
+#include "./opensource/rapidjson/include/rapidjson/istreamwrapper.h"
+#include "./opensource/rapidjson/include/rapidjson/ostreamwrapper.h"
+#include "./opensource/hwpx-owpml-model/OWPMLApi/OWPMLDocument.h"
+#endif
 #include "EXdefine.h"
 
 class MetatagEX
@@ -75,17 +86,23 @@ class MetatagEX
         void ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc, bool bShowProgress, bool bHeaderOnly);
         void SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bShowProgress, bool bHeaderOnly);
         static void CalcPercentProc(int nFileCnt);
-
     private:
+      
+        void TraverseHeader(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document = NULL);
+        void TraverseSection(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document = NULL);
+        std::u16string GetObjectTypeText(unsigned int id);
+#ifdef OS_UNIX
         void SearchHeader(std::string path, std::string srcfilePath);
         void SearchSection(std::string path, std::string srcfilePath);
         void SearchString(std::string srcfilePath, DOMNode* node);
         void SortShape(DOMNode* node, std::string srcfilePath);
         void SortTable(DOMNode* node, std::string srcfilePath);
-        void TraverseHeader(std::string path, std::string srcfilePath);
-        void TraverseSection(std::string path, std::string srcfilePath);
+
         void TraverseTable(DOMNode* node, std::string srcfilePath);
         void TraverseShape(DOMNode* node, std::string srcfilePath);
         void ExtractShape(DOMNode* node, std::string srcfilePath);
         void ExtractString(std::string srcfilePath, DOMNode* node, std::string origin);
+#else
+        void ExtractString(std::string srcfilePath, LPCWSTR tag, std::string origin);
+#endif
 };
