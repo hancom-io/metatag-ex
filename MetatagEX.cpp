@@ -36,18 +36,16 @@ void MetatagEX::CalcPercentProc(int nFileCnt)
     return;
 }
 
-void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bShowProgress, bool bHeaderOnly)
+bool MetatagEX::ImportMetatagFromJson(std::string path, rapidjson::Document &jsonDoc)
 {
-    Initialize();
 
-    rapidjson::Document jsonDoc;
 
-    if (Util::IsExistFile(jsonPath) == false)
+    if (Util::IsExistFile(path) == false)
     {
         std::cout << StringResource::NoJsonFile << std::endl;
-        return;
+        return false;
     }
-    std::ifstream ifs(jsonPath);
+    std::ifstream ifs(path);
     rapidjson::IStreamWrapper isw(ifs);
     jsonDoc.ParseStream(isw);
     rapidjson::StringBuffer buffer{};
@@ -58,7 +56,7 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
     {
         std::cout << "Invalid Input" << std::endl;
 
-        return;
+        return false;
     }
 
     rapidjson::Value::MemberIterator itr = jsonDoc.MemberBegin();
@@ -66,6 +64,18 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
     {
         MetatagEX::GetFindMetatagVector()->push_back(Util::string_to_utf16(itr->value.GetString()));
     }
+
+    return true;
+}
+
+void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bShowProgress, bool bHeaderOnly)
+{
+    Initialize();
+
+    rapidjson::Document jsonDoc;
+
+    if (!ImportMetatagFromJson(jsonPath, jsonDoc))
+        return;
 
     std::vector<std::string> files;
     std::string regexStr = Util::getdir(inputPath, files);
@@ -90,7 +100,7 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
             reg = std::regex("^.*.hwpx$");
         }
 
-        GetFileIndex(true, false);
+        MetatagEX::GetFileIndex(true, false);
 
         std::smatch match;
         if (std::regex_search(*iter_file, match, reg) == false)
@@ -118,10 +128,10 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
             return;
         }
 
-        //SearchHeader(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
+        SearchHeader(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
         if (bHeaderOnly == false)
         {
-            //    SearchSection(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
+            SearchSection(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
         }
         Util::removeDirectory(unzipPath.c_str());
 
@@ -391,11 +401,12 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
 {
     Initialize();
 
+    rapidjson::Document jsonDoc;
+    jsonDoc.SetObject();
+
     std::vector<std::string> files;
     std::string regexStr = Util::getdir(inputPath, files);
     std::vector<std::string>::iterator iter_file = files.begin();
-    rapidjson::Document jsonDoc;
-    jsonDoc.SetObject();
     std::thread* CountingThread = NULL;
     if (bShowProgress)
     {
@@ -435,23 +446,7 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
         {
             Util::createDirectory(Util::string_to_utf16(unzipPath.c_str()));
         }
-#endif // OS_UNIX
 
-#ifndef OS_UNIX
-        std::string srcPath = inputPath + StringResource::PathSeperator + *iter_file;
-        std::wstring docPath = Util::string_to_wstring(srcPath);
-
-        OWPML::COwpmlDocumnet* document = OWPML::COwpmlDocumnet::OpenDocument(docPath.c_str());
-        if (document == NULL) {
-            return;
-
-        }
-        TraverseHeader("", srcPath, document);
-        if (bHeaderOnly == false)
-        {
-            TraverseSection("", srcPath, document);
-        }
-#else
         char path[PATH_MAX];
         sprintf_s(path, "%s", std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
         if (Util::extract(path, unzipPath.c_str()) == -1)
@@ -466,6 +461,21 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
             TraverseSection(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
         }
         Util::removeDirectory(unzipPath.c_str());
+#else
+        std::string srcPath = inputPath + StringResource::PathSeperator + *iter_file;
+        std::wstring docPath = Util::string_to_wstring(srcPath);
+
+        OWPML::COwpmlDocumnet* document = OWPML::COwpmlDocumnet::OpenDocument(docPath.c_str());
+        if (document == NULL) {
+            return;
+
+        }
+        TraverseHeader("", srcPath, document);
+        if (bHeaderOnly == false)
+        {
+            TraverseSection("", srcPath, document);
+        }
+ 
 #endif // OS_UNIX
 
 
@@ -501,6 +511,10 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
             {
                 std::cout << "object : " << iter->second["object"] << std::endl;
             }
+            if (iter->second.find("data") != iter->second.end())
+            {
+                std::cout << "data : " << iter->second["text"] << std::endl;
+            }
             std::cout << std::endl;
         }
     } else if (option == Option::File)
@@ -525,6 +539,12 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
             {
                 rapidjson::Value keyObj("object", allocator);
                 rapidjson::Value valObj(iter->second["object"].c_str(), allocator);
+                data.AddMember(keyObj, valObj, allocator);
+            }
+            if (iter->second.find("data") != iter->second.end())
+            {
+                rapidjson::Value keyObj("data", allocator);
+                rapidjson::Value valObj(iter->second["data"].c_str(), allocator);
                 data.AddMember(keyObj, valObj, allocator);
             }
             valueArray.PushBack(data, allocator);
@@ -566,7 +586,7 @@ void MetatagEX::TraverseHeader(std::string path, std::string srcfilePath, OWPML:
             std::u16string objectType = GetObjectTypeText(objectId);
             std::string str = Util::utf16_to_string(objectType);
 
-            ExtractString(srcfilePath, metatagWStr, str);
+            ExtractString(srcfilePath, metatagWStr, str, "");
         }
     }
     
@@ -639,11 +659,13 @@ void MetatagEX::TraverseSection(std::string path, std::string srcfilePath, OWPML
             LPCWSTR metatagWStr = (*objiter).first;
 
             unsigned int objectId = (*objiter).second->GetParentObj()->GetID();
+            std::string objectType = Util::utf16_to_string(GetObjectTypeText(objectId));
 
-            std::u16string objectType = GetObjectTypeText(objectId);
-            std::string str = Util::utf16_to_string(objectType);
+            CHncStringW contentText = OWPML::COwpmlUtils::GetMetaTagContent((*objiter).second);
+            std::u16string tmp = Util::wstring_to_utf16(contentText);
+            std::string text = Util::utf16_to_string(tmp);
 
-            ExtractString(srcfilePath, metatagWStr, str);
+            ExtractString(srcfilePath, metatagWStr, objectType, text);
 
         }
 
@@ -811,7 +833,7 @@ void MetatagEX::ExtractString(std::string srcfilePath, DOMNode* node, std::strin
     }
 }
 #else 
-void MetatagEX::ExtractString(std::string srcfilePath, LPCWSTR tag, std::string origin)
+void MetatagEX::ExtractString(std::string srcfilePath, LPCWSTR tag, std::string origin, std::string contentText)
 {
     char fullPath[MAX_PATH];
     char* fileName;
@@ -821,6 +843,7 @@ void MetatagEX::ExtractString(std::string srcfilePath, LPCWSTR tag, std::string 
     std::map<std::string, std::string> tempMap;
     tempMap.insert(std::make_pair("path", fullPath));
     tempMap.insert(std::make_pair("object", origin));
+    tempMap.insert(std::make_pair("data", contentText));
     MetatagEX::GetMetatagContainer()->push_back(std::make_pair(token, tempMap));
 }
 #endif
