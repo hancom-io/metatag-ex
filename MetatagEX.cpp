@@ -513,7 +513,7 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
             }
             if (iter->second.find("data") != iter->second.end())
             {
-                std::cout << "data : " << iter->second["text"] << std::endl;
+                std::cout << "data : " << iter->second["data"] << std::endl;
             }
             std::cout << std::endl;
         }
