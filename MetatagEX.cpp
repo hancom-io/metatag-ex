@@ -38,8 +38,6 @@ void MetatagEX::CalcPercentProc(int nFileCnt)
 
 bool MetatagEX::ImportMetatagFromJson(std::string path, rapidjson::Document &jsonDoc)
 {
-
-
     if (Util::IsExistFile(path) == false)
     {
         std::cout << StringResource::NoJsonFile << std::endl;
@@ -62,7 +60,17 @@ bool MetatagEX::ImportMetatagFromJson(std::string path, rapidjson::Document &jso
     rapidjson::Value::MemberIterator itr = jsonDoc.MemberBegin();
     for (itr; itr != jsonDoc.MemberEnd(); ++itr)
     {
-        MetatagEX::GetFindMetatagVector()->push_back(Util::string_to_utf16(itr->value.GetString()));
+        if (itr->value.GetType() == rapidjson::kArrayType) {
+
+            for (auto& arr : itr->value.GetArray()) {
+                if (arr.IsObject()) {
+                    rapidjson::Value var = arr.GetObj();
+                    MetatagEX::GetFindMetatagVector()->push_back(Util::string_to_utf16(var["tag"].GetString()));
+                }
+            }
+        } else if (itr->value.GetType() == rapidjson::kStringType) {
+            MetatagEX::GetFindMetatagVector()->push_back(Util::string_to_utf16(itr->value.GetString()));
+        }
     }
 
     return true;
@@ -136,12 +144,19 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
         Util::removeDirectory(unzipPath.c_str());
 
 #else
-        char path[MAX_PATH];
-        sprintf_s(path, "%s", std::string(inputPath + StringResource::PathSeperator + *iter_file).c_str());
-        //SearchHeader(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
+        std::string srcPath = inputPath + StringResource::PathSeperator + *iter_file;
+        std::wstring docPath = Util::string_to_wstring(srcPath);
+
+        OWPML::COwpmlDocumnet* document = OWPML::COwpmlDocumnet::OpenDocument(docPath.c_str());
+        if (document == NULL) {
+            return;
+
+        }
+
+        SearchHeader("", srcPath, document);
         if (bHeaderOnly == false)
         {
-            //    SearchSection(unzipPath, inputPath + StringResource::PathSeperator + *iter_file);
+            SearchSection("", srcPath, document);
         }
 #endif
 
@@ -172,15 +187,16 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
         std::ofstream ofs(outputPath);
         rapidjson::OStreamWrapper osw(ofs);
 
-        rapidjson::Writer<rapidjson::OStreamWrapper> writer(osw);
+        rapidjson::PrettyWriter<rapidjson::OStreamWrapper> writer(osw);
         jsonDoc.Accept(writer);
         ofs.close();
     }
 }
 
-#ifdef OS_UNIX
-void MetatagEX::SearchHeader(std::string path, std::string srcfilePath)
+
+void MetatagEX::SearchHeader(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document)
 {
+#ifdef OS_UNIX
     XmlParser headerParser;
     headerParser.readFile(std::string(path + StringResource::PathSeperator + "Contents" + StringResource::PathSeperator + "header.xml").c_str());
     DOMNode* pNodeHeader = XmlParser::SelectSingleNode(Defines::NODE_HEAD, headerParser.GetRootElement());
@@ -191,8 +207,109 @@ void MetatagEX::SearchHeader(std::string path, std::string srcfilePath)
     {
         SearchString(srcfilePath, *iter);
     }
+#else
+    OWPML::Objectlist* objList = document->GetHead()->GetObjectList();
+    OWPML::Objectlist::iterator iter_obj = objList->begin();
+    for (iter_obj; iter_obj != objList->end(); ++iter_obj)
+    {
+        OWPML::Objectlist result;
+        OWPML::COwpmlUtils::GetMetaTagObject(*iter_obj, result);
+        OWPML::Objectlist::iterator iterTagObj = result.begin();
+        for (iterTagObj; iterTagObj != result.end(); ++iterTagObj)
+        {
+            CHncStringW metatagWStr = OWPML::COwpmlUtils::GetMetaTagName(*iterTagObj);
+            SearchString(srcfilePath, metatagWStr);
+        }
+    }
+#endif
 }
 
+
+void MetatagEX::SearchSection(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document)
+{
+#ifdef OS_UNIX
+    bool isEndOfSection = false;
+    int sectionIndex = 0;
+    while (isEndOfSection == false) {
+        std::string sectionFilePath = path + StringResource::PathSeperator + "Contents";
+        char filename[50] = { 0, };
+        snprintf(filename, sizeof(char) * 50, std::string(StringResource::PathSeperator + "section%d.xml").c_str(), sectionIndex);
+
+        sectionFilePath.append(filename);
+
+        // Next file index
+        sectionIndex++;
+
+        // Is exist file
+        if (Util::IsExistFile(sectionFilePath) == false) {
+            isEndOfSection = true;
+            continue;
+        }
+
+        // ----------------------------------------------
+        // Read File
+        XmlParser xmlParser;
+        xmlParser.readFile(sectionFilePath);
+
+        // Section
+        DOMNode* pNodeSection = XmlParser::SelectSingleNode(Defines::NODE_SECTION, xmlParser.GetRootElement());
+        if (pNodeSection == NULL) {
+            return;
+        }
+
+        std::list<DOMNode*> nodelist;
+        std::list<DOMNode*>::iterator itr;
+        XmlParser::SelectNodes(Defines::NODE_PARA, pNodeSection, &nodelist);
+
+        for (itr = nodelist.begin(); itr != nodelist.end(); ++itr)
+        {
+            std::list<DOMNode*> tblList;
+            XmlParser::SelectNodes(Defines::NODE_TABLE, *itr, &tblList);
+            std::list<DOMNode*>::iterator iter_tbl = tblList.begin();
+            for (iter_tbl; iter_tbl != tblList.end(); ++iter_tbl)
+            {
+                SortTable(*iter_tbl, srcfilePath);
+            }
+            tblList.clear();
+            SortShape(*itr, srcfilePath);
+        }
+    }
+#else
+    std::vector<OWPML::CSectionType*>::iterator iter_section = document->GetSections()->begin();
+    for (iter_section; iter_section != document->GetSections()->end(); ++iter_section)
+    {
+        std::multimap<CHncStringW, OWPML::CObject*> objectList;
+        OWPML::COwpmlUtils::GetMetaTagObject(*iter_section, objectList);
+        std::multimap<CHncStringW, OWPML::CObject*>::iterator objiter = objectList.begin();
+
+        for (objiter; objiter != objectList.end(); ++objiter)
+        {
+            LPCWSTR metatagWStr = (*objiter).first;
+            SearchString(srcfilePath, metatagWStr);
+        }
+
+    }
+#endif
+}
+
+
+void MetatagEX::SearchString(std::string srcfilePath, LPCWSTR tag) {
+    std::u16string token = Util::wstring_to_utf16(tag);
+    std::vector<std::u16string>::iterator iter_find = std::find(MetatagEX::GetFindMetatagVector()->begin(), MetatagEX::GetFindMetatagVector()->end(), token);
+
+    if (iter_find != MetatagEX::GetFindMetatagVector()->end())
+    {
+
+        char fullPath[MAX_PATH];
+        char* fileName;
+        GetFullPathName(srcfilePath.c_str(), MAX_PATH, fullPath, &fileName);
+
+        MetatagEX::GetSortedMetatag()->push_back(make_pair(fullPath, *iter_find));
+    }
+
+}
+
+#ifdef OS_UNIX
 void MetatagEX::SearchString(std::string srcfilePath, DOMNode* node)
 {
     std::u16string contents;
@@ -226,55 +343,6 @@ void MetatagEX::SearchString(std::string srcfilePath, DOMNode* node)
     }
 }
 
-void MetatagEX::SearchSection(std::string path, std::string srcfilePath)
-{
-    bool isEndOfSection = false;
-    int sectionIndex = 0;
-    while (isEndOfSection == false) {
-        std::string sectionFilePath = path + StringResource::PathSeperator + "Contents";
-        char filename[50] = {0, };
-        snprintf(filename, sizeof(char) * 50, std::string(StringResource::PathSeperator + "section%d.xml").c_str(), sectionIndex);
-
-        sectionFilePath.append(filename);
-    
-        // Next file index
-        sectionIndex++;
-
-        // Is exist file
-        if (Util::IsExistFile(sectionFilePath) == false) {
-            isEndOfSection = true;
-            continue;
-        }
-
-        // ----------------------------------------------
-        // Read File
-        XmlParser xmlParser;
-        xmlParser.readFile(sectionFilePath);
-
-        // Section
-        DOMNode* pNodeSection = XmlParser::SelectSingleNode(Defines::NODE_SECTION, xmlParser.GetRootElement());
-        if (pNodeSection == NULL) {
-            return;
-        }
-
-        std::list<DOMNode*> nodelist;
-        std::list<DOMNode*>::iterator itr;
-        XmlParser::SelectNodes(Defines::NODE_PARA, pNodeSection, &nodelist);
-
-        for (itr = nodelist.begin(); itr != nodelist.end(); ++itr)
-        {
-            std::list<DOMNode*> tblList;
-            XmlParser::SelectNodes(Defines::NODE_TABLE, *itr, &tblList);
-            std::list<DOMNode*>::iterator iter_tbl = tblList.begin();
-            for(iter_tbl; iter_tbl != tblList.end(); ++iter_tbl)
-            {
-                SortTable(*iter_tbl, srcfilePath);
-            }
-            tblList.clear();
-            SortShape(*itr, srcfilePath);
-        }
-    }
-}
 
 void MetatagEX::SortTable(DOMNode* node, std::string srcfilePath)
 {
@@ -854,13 +922,23 @@ std::u16string MetatagEX::GetObjectTypeText(unsigned int id) {
     case ID_PARA_PictureType: // 그림
         text.assign(u"Picture");
         break;
-    case ID_PARA_LineType: //글상자, 도형
+    case ID_PARA_LineType:
+        text.assign(u"Line");
+        break;
     case ID_PARA_RectangleType:
+        text.assign(u"Rectangle");
+        break;
     case ID_PARA_EllipseType:
+        text.assign(u"Ellipse");
+        break;
     case ID_PARA_ArcType:
+        text.assign(u"Arc");
+        break;
     case ID_PARA_PolygonType:
+        text.assign(u"Polygon");
+        break;
     case ID_PARA_CurveType:
-        text.assign(u"Shape");
+        text.assign(u"Curve");
         break;
     case ID_PARA_FieldBegin: //누름틀, 상호참조, 자료연결, 하이퍼링크
         text.assign(u"Link");
@@ -874,8 +952,12 @@ std::u16string MetatagEX::GetObjectTypeText(unsigned int id) {
     case ID_HEAD_HWPMLHeadType: // 헤더(문서)
         text.assign(u"Document");
         break;
+    case ID_PARA_ContainerType:
+        text.assign(u"Container");
+        break;
     default:
-        assert(0, id, "새로 추가해야함");
+        text.assign(u"");
+        assert("새로 추가해야함");
         break;
     }
     return text;

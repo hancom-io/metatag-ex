@@ -94,8 +94,8 @@ class MetatagEX
         bool ImportMetatagFromJson(std::string path, rapidjson::Document &jsonDoc);
 
 #ifdef OS_UNIX
-        void SearchHeader(std::string path, std::string srcfilePath);
-        void SearchSection(std::string path, std::string srcfilePath);
+
+
         void SearchString(std::string srcfilePath, DOMNode* node);
         void SortShape(DOMNode* node, std::string srcfilePath);
         void SortTable(DOMNode* node, std::string srcfilePath);
@@ -105,6 +105,13 @@ class MetatagEX
         void ExtractShape(DOMNode* node, std::string srcfilePath);
         void ExtractString(std::string srcfilePath, DOMNode* node, std::string origin);
 #else
+
+        void SearchHeader(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document = NULL);
+        void SearchSection(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document = NULL);
+        void SearchString(std::string srcfilePath, LPCWSTR tag);
         void ExtractString(std::string srcfilePath, LPCWSTR tag, std::string origin, std::string contentText);
+
+
+
 #endif
 };
