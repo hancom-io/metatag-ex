@@ -11,15 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetatagEX", "MetatagEX.vcxp
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWPML", "opensource\hwpx-owpml-model\OWPML\OWPML.vcxproj", "{2C5A1DC7-BB24-4D04-9B61-5D9FB07E3DEB}"
-	ProjectSection(ProjectDependencies) = postProject
-		{493F7940-8142-4886-ABF7-AF2053596364} = {493F7940-8142-4886-ABF7-AF2053596364}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWPMLApi", "opensource\hwpx-owpml-model\OWPMLApi\OWPMLApi.vcxproj", "{809B77D2-2E46-40EA-AC9B-8F7416FBF78C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{493F7940-8142-4886-ABF7-AF2053596364} = {493F7940-8142-4886-ABF7-AF2053596364}
-		{2C5A1DC7-BB24-4D04-9B61-5D9FB07E3DEB} = {2C5A1DC7-BB24-4D04-9B61-5D9FB07E3DEB}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWPMLUtil", "opensource\hwpx-owpml-model\OWPMLUtil\OWPMLUtil.vcxproj", "{493F7940-8142-4886-ABF7-AF2053596364}"
 EndProject

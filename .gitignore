@@ -1,6 +1,7 @@
 Build/
 CMakeFiles/
 out/build/
+opensource/
 .vs/
 .vscode/
 *.ncb

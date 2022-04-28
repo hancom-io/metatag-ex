@@ -1,4 +1,7 @@
-﻿#include <iostream>
+﻿#ifndef _METATAGEX_
+#define _METATAGEX_
+
+#include <iostream>
 #include <thread>
 #include <map>
 #include <set>
@@ -18,13 +21,32 @@
 #include "rapidjson/ostreamwrapper.h"
 #else
 #include "./opensource/rapidjson/include/rapidjson/document.h"
-#include "./opensource/rapidjson/include/rapidjson/document.h"
 #include "./opensource/rapidjson/include/rapidjson/writer.h"
 #include "./opensource/rapidjson/include/rapidjson/stringbuffer.h"
 #include "./opensource/rapidjson/include/rapidjson/prettywriter.h"
 #include "./opensource/rapidjson/include/rapidjson/istreamwrapper.h"
 #include "./opensource/rapidjson/include/rapidjson/ostreamwrapper.h"
+
 #include "./opensource/hwpx-owpml-model/OWPMLApi/OWPMLDocument.h"
+#include "./opensource/hwpx-owpml-model/OWPMLUtil/HncStringUtil.h"
+
+// owpml stdafx에 정의된 헤더들.. 정리 필요
+#include <cstdlib>
+#include <vector>
+#include <list>
+#include <map>
+#include <set>
+#include <deque>
+#include <stdio.h>
+#include <queue>
+#include <stack>
+#include <algorithm>
+#include <complex>
+#include <memory>
+#include "./opensource/hwpx-owpml-model/OWPML/Base/Object.h"
+#include "./opensource/hwpx-owpml-model/OWPML/Class/classinclude.h"
+
+
 #endif
 #include "EXdefine.h"
 
@@ -37,17 +59,17 @@ class MetatagEX
         }
         ~MetatagEX()
         {
-            
+
         }
 
-		void Initialize();
-        
+        void Initialize();
+
         static int GetFileIndex(bool bAdd = true, bool bReset = false)
         {
             static int index = 0;
-            if(bAdd == true)
+            if (bAdd == true)
                 index++;
-            if(bReset == true)
+            if (bReset == true)
                 index = 0;
             return index;
         }
@@ -55,9 +77,9 @@ class MetatagEX
         static int GetTagIndex(bool bAdd = true, bool bReset = false)
         {
             static int index = 0;
-            if(bAdd == true)
+            if (bAdd == true)
                 index++;
-            if(bReset == true)
+            if (bReset == true)
                 index = 0;
             return index;
         }
@@ -87,15 +109,13 @@ class MetatagEX
         void SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bShowProgress, bool bHeaderOnly);
         static void CalcPercentProc(int nFileCnt);
     private:
-      
+
         void TraverseHeader(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document = NULL);
         void TraverseSection(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document = NULL);
         std::u16string GetObjectTypeText(unsigned int id);
         bool ImportMetatagFromJson(std::string path, rapidjson::Document &jsonDoc);
 
 #ifdef OS_UNIX
-
-
         void SearchString(std::string srcfilePath, DOMNode* node);
         void SortShape(DOMNode* node, std::string srcfilePath);
         void SortTable(DOMNode* node, std::string srcfilePath);
@@ -105,13 +125,19 @@ class MetatagEX
         void ExtractShape(DOMNode* node, std::string srcfilePath);
         void ExtractString(std::string srcfilePath, DOMNode* node, std::string origin);
 #else
-
         void SearchHeader(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document = NULL);
         void SearchSection(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document = NULL);
-        void SearchString(std::string srcfilePath, LPCWSTR tag);
-        void ExtractString(std::string srcfilePath, LPCWSTR tag, std::string origin, std::string contentText);
+        void SearchString(std::string srcfilePath, std::u16string tag);
+        void ExtractString(std::string srcfilePath, std::u16string tag, std::string origin, std::string contentText);
 
-
-
+        void GetMetaTagObject(OWPML::CObject* searchObject, OWPML::Objectlist& result);
+        void GetMetaTagObject(OWPML::CObject* searchObject, std::multimap<std::u16string, OWPML::CObject*>& result);
+        //void SetMetaTagName(OWPML::CObject* object, std::u16string srcTagName, std::u16string destTagName);
+        std::u16string GetMetaTagName(OWPML::CObject* object);
+        std::u16string GetMetaTagContent(OWPML::CObject* object);
+        OWPML::CPType* ConvertCelltoPara(OWPML::CTc* tc);
+        std::u16string ProcessingTextElement(OWPML::CT* pText);
 #endif
 };
+
+#endif //_METATAGEX_

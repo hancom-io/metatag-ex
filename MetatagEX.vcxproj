@@ -107,7 +107,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <AdditionalIncludeDirectories>./../;./;../;$(ProjectDir)out\install\x64-Debug\include\;$(ProjectDir)opensource\hwpx-owpml-model\OWPML\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLApi\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLUtil\;$(ProjectDir)opensource\hwpx-owpml-model\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./../;./;../;$(ProjectDir)opensource\hwpx-owpml-model\OWPML\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLApi\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLUtil\;$(ProjectDir)opensource\hwpx-owpml-model\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <PreprocessorDefinitions>OS_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>

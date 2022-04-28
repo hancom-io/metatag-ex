@@ -1,4 +1,8 @@
-﻿#include <iostream>
+﻿#ifndef _METATAGEX_UTIL_
+#define _METATAGEX_UTIL_
+
+
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -33,3 +37,5 @@ public:
     static int extract(const char* filePath, const char* unzipPath);
 #endif
 };
+
+#endif //_METATAGEX_UTIL_
