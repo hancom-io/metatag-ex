@@ -82,7 +82,6 @@ bool CommandParser::ParsingInput()
     {
         if (ConfigureOption(CommandWord::GetDestList, 2) == false)
         {
-            std::cout << StringResource::InvalidInput.c_str() << std::endl;
             return false;
         } else
         {
@@ -109,6 +108,9 @@ bool CommandParser::ParsingInput()
 bool CommandParser::ConfigureOption(const std::string& inputStr, int pathCnt)
 {
     bool ret = false;
+    bool hasSL = false;
+    bool hasDL = false;
+
     std::vector<const char*>::iterator iter = m_inputStrVector.begin();
     for (iter; iter != m_inputStrVector.end(); ++iter)
     {
@@ -117,6 +119,15 @@ bool CommandParser::ConfigureOption(const std::string& inputStr, int pathCnt)
             m_nPathCnt = pathCnt;
             ret = true;
         }
+
+        if (CommandWord::GetDestList.compare(*iter) == 0)
+            hasDL = true;
+        
+        if (CommandWord::GetSourceList.compare(*iter) == 0)
+            hasSL = true;
+
+        if (hasSL && hasDL)
+            return false;
 
         // Custom Define
         if (CommandWord::GetDestList.compare(*iter) == 0)

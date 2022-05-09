@@ -136,7 +136,7 @@ class MetatagEX
         std::u16string GetMetaTagName(OWPML::CObject* object);
         std::u16string GetMetaTagContent(OWPML::CObject* object);
         OWPML::CPType* ConvertCelltoPara(OWPML::CTc* tc);
-        std::u16string ProcessingTextElement(OWPML::CT* pText);
+        std::u16string ProcessingTextElement(OWPML::CObject* object, int type = OWPML::FIELDTYPE::FT_NONE);
 #endif
 };
 

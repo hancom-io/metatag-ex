@@ -22,13 +22,13 @@ enum CommandDef
 };
 namespace CommandWord
 {
-    static std::string ToJsonFile = "f";
-    static std::string OrderDescend = "dsc";
-    static std::string GetSourceList = "sl";
-    static std::string GetDestList = "dl";
-    static std::string Help = "help";
-    static std::string ShowProgress = "pr";
-    static std::string HeaderOnly = "doc";
+    static std::string ToJsonFile = "-f";
+    static std::string OrderDescend = "-dsc";
+    static std::string GetSourceList = "-sl";
+    static std::string GetDestList = "-dl";
+    static std::string Help = "-o";
+    static std::string ShowProgress = "-pr";
+    static std::string HeaderOnly = "-doc";
 }
 class CommandParser
 {

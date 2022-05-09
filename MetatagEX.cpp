@@ -577,7 +577,7 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
             {
                 std::cout << "object : " << iter->second["object"] << std::endl;
             }
-            if (iter->second.find("data") != iter->second.end())
+            if (iter->second.find("data") != iter->second.end() && !iter->second["data"].empty())
             {
                 std::cout << "data : " << iter->second["data"] << std::endl;
             }
@@ -585,37 +585,66 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
         }
     } else if (option == Option::File)
     {
-        rapidjson::Value valueArray(rapidjson::kArrayType);
-        valueArray.SetArray();
+        rapidjson::Value fileNameArray(rapidjson::kArrayType);
+        fileNameArray.SetArray();
         auto& allocator = jsonDoc.GetAllocator();
         for (iter = MetatagEX::GetMetatagContainer()->begin(); iter != MetatagEX::GetMetatagContainer()->end(); ++iter)
         {
-            rapidjson::Value data(rapidjson::kObjectType);
-            data.SetObject();
+            rapidjson::Value objectAttribute(rapidjson::kObjectType);
+            objectAttribute.SetObject();
             rapidjson::Value keyTag("tag", allocator);
             rapidjson::Value valTag(Util::utf16_to_string(iter->first).c_str(), allocator);
-            data.AddMember(keyTag, valTag, allocator);
+            objectAttribute.AddMember(keyTag, valTag, allocator);
             if (iter->second.find("path") != iter->second.end())
             {
                 rapidjson::Value keyPath("path", allocator);
                 rapidjson::Value valPath(iter->second["path"].c_str(), allocator);
-                data.AddMember(keyPath, valPath, allocator);
+                objectAttribute.AddMember(keyPath, valPath, allocator);
             }
             if (iter->second.find("object") != iter->second.end())
             {
                 rapidjson::Value keyObj("object", allocator);
                 rapidjson::Value valObj(iter->second["object"].c_str(), allocator);
-                data.AddMember(keyObj, valObj, allocator);
+                objectAttribute.AddMember(keyObj, valObj, allocator);
             }
             if (iter->second.find("data") != iter->second.end())
             {
-                rapidjson::Value keyObj("data", allocator);
-                rapidjson::Value valObj(iter->second["data"].c_str(), allocator);
-                data.AddMember(keyObj, valObj, allocator);
+                std::string contentData = iter->second["data"];
+                if (!contentData.empty()) {
+                    rapidjson::Value keyObjData("data", allocator);
+                    size_t previous = 0, current = 0;
+                    current = contentData.find((char16_t)HWPCH_LINE_BREAK);
+
+                    if (current != string::npos) {
+                        rapidjson::Value arrayRes(rapidjson::kArrayType);
+
+                        while (current != string::npos) {
+                            std::string subString = contentData.substr(previous, current - previous);
+                            rapidjson::Value valSubString(subString.c_str(), allocator);
+
+                            arrayRes.PushBack(valSubString, allocator);
+                            previous = current + 1;
+                            current = contentData.find((char16_t)HWPCH_LINE_BREAK, previous);
+                            if (previous < contentData.size() && current == string::npos) {
+                                rapidjson::Value last(contentData.substr(previous, string::npos).c_str(), allocator);
+
+                                arrayRes.PushBack(last, allocator);
+        
+                            }
+
+                        }
+                        objectAttribute.AddMember(keyObjData, arrayRes, allocator);
+
+                    } else {
+                        rapidjson::Value valObj(iter->second["data"].c_str(), allocator);
+                        objectAttribute.AddMember(keyObjData, valObj, allocator);
+                    }
+                }
+
             }
-            valueArray.PushBack(data, allocator);
+            fileNameArray.PushBack(objectAttribute, allocator);
         }
-        jsonDoc.AddMember("item", valueArray, allocator);
+        jsonDoc.AddMember("fileName", fileNameArray, allocator);
         std::ofstream ofs(outputPath);
         rapidjson::OStreamWrapper osw(ofs);
 
@@ -649,8 +678,7 @@ void MetatagEX::TraverseHeader(std::string path, std::string srcfilePath, OWPML:
         {
             std::u16string metatagWStr = GetMetaTagName(*iterTagObj);
             unsigned int objectId = (*iterTagObj)->GetParentObj()->GetID();;
-            std::u16string objectType = GetObjectTypeText(objectId);
-            std::string str = Util::utf16_to_string(objectType);
+            std::string str = Util::utf16_to_string(GetObjectTypeText(objectId));
 
             ExtractString(srcfilePath, metatagWStr, str, "");
         }
@@ -728,9 +756,9 @@ void MetatagEX::TraverseSection(std::string path, std::string srcfilePath, OWPML
             std::string objectType = Util::utf16_to_string(GetObjectTypeText(objectId));
 
             std::u16string contentText = GetMetaTagContent((*iter_object).second);
-            std::string text = Util::utf16_to_string(contentText);
+            std::string str = Util::utf16_to_string(contentText);
 
-            ExtractString(srcfilePath, metatagWStr, objectType, text);
+            ExtractString(srcfilePath, metatagWStr, objectType, str);
 
         }
 
@@ -1106,63 +1134,16 @@ std::u16string MetatagEX::GetMetaTagContent(OWPML::CObject* object)
             parent = parent->GetParentObj();
         }
 
-        para = (OWPML::CPType*)parent;
-
-        int paraCount = para->GetChildCount();
-        for (int i = 0; i < paraCount; i++) {
-            run = para->Getrun(i);
-            if (run) {
-                if (type == OWPML::FIELDTYPE::FT_CLICK_HERE && run->GetCharPrIDRef() != 0)
-                    continue;
-
-                OWPML::CT* text = run->Gett(0);
-                if (text)
-                    return ProcessingTextElement(text);
-            }
-        }
+        return ProcessingTextElement(parent, type);
         break;
     }
     case ID_PARA_Tc:
-    {
-        OWPML::Objectlist* pObjectList = parent->GetObjectList();
-        OWPML::Objectlist::iterator iter = pObjectList->begin();
-        for (iter; iter != pObjectList->end(); ++iter) {
-            OWPML::CObject* pObj = (*iter);
-            if (pObj && pObj->GetID() == ID_PARA_ParaListType) {
-                OWPML::Objectlist* pSubListChild = pObj->GetObjectList();
-                OWPML::Objectlist::iterator subIter = pSubListChild->begin();
-
-                for (subIter; subIter != pSubListChild->end(); ++subIter) {
-                    OWPML::CObject* pSubObj = (*subIter);
-                    if (pSubObj && pSubObj->GetID() == ID_PARA_PType) {
-                        OWPML::CPType* p = (OWPML::CPType*)pSubObj;
-                        OWPML::CRunType* r = NULL;
-
-                        int paraCount = p->GetChildCount();
-                        for (int n = 0; n < paraCount; n++) {
-                            r = p->Getrun(n);
-
-                            if (r) {
-                                OWPML::CT* t = r->Gett(0);
-                                if (t)
-                                    return ProcessingTextElement(t);
-                            }
-                        }
-                    }
-
-
-                }
-
-            }
-        }
-        break;
-    }
     case ID_PARA_RectangleType:
     case ID_PARA_EllipseType:
     case ID_PARA_ArcType:
     case ID_PARA_PolygonType:
     case ID_PARA_CurveType:
-        return ProcessingTextElement((OWPML::CT*)parent);
+        return ProcessingTextElement(parent);
     default:
         break;
     }
@@ -1171,15 +1152,15 @@ std::u16string MetatagEX::GetMetaTagContent(OWPML::CObject* object)
 }
 
 /// 메타태그 텍스트 추출
-std::u16string MetatagEX::ProcessingTextElement(OWPML::CT* pText)
+std::u16string MetatagEX::ProcessingTextElement(OWPML::CObject* object, int type)
 {
-    if (pText == NULL) {
+    if (object == NULL) {
         return u"";
     }
 
     std::u16string text, buff;
     UINT i = 0, j = 0, count = 0, len = 0;
-    OWPML::Objectlist* pChildList = pText->GetObjectList();
+    OWPML::Objectlist* pChildList = object->GetObjectList();
     OWPML::CObject* pObject = NULL;
 
     if (pChildList) { // (#PCDATA | TITLEMARK | TAB | LINEBREAK | HYPEN | NBSPACE | FWSPACE)*
@@ -1189,120 +1170,98 @@ std::u16string MetatagEX::ProcessingTextElement(OWPML::CT* pText)
             if (pObject) {
                 switch (pObject->GetID())
                 {
+                case ID_PARA_ParaListType:
+                {
+                    text += ProcessingTextElement(pObject);
+                    break;
+                }
+                case ID_PARA_PType:
+                {
+                    text += ProcessingTextElement(pObject);
+                    break;
+                }
+                case ID_PARA_RunType:
+                {
+                    OWPML::CRunType* run = (OWPML::CRunType*)pObject;
+
+                    if (run) {
+                        if (type == OWPML::FIELDTYPE::FT_CLICK_HERE && run->GetCharPrIDRef() != 0)
+                            continue;
+
+                        OWPML::CT* t = run->Gett(0);
+                        if (t) {
+                            text += ProcessingTextElement(t);
+                        }
+                    }
+
+                    break;
+                }
+                case ID_PARA_LineSegArray:
+                {
+                    text += ((char16_t)HWPCH_LINE_BREAK);
+                    break;
+                }
                 case ID_PARA_Char:
                 {
-                    OWPML::CChar* pChar = (OWPML::CChar*)pObject;
-                    text.clear();
-                    text.assign(Util::wstring_to_utf16(pChar->Getval()));
                     buff.clear();
-                    len = text.size();
+                    OWPML::CChar* pChar = (OWPML::CChar*)pObject;
+                    std::u16string valueText = Util::wstring_to_utf16(pChar->Getval());
+                    len = valueText.size();
                     for (j = 0; j < len; j++) {
-                        if (text.at(j) != HWPCH_LINE_BREAK && text.at(j) != HWPCH_PARA_BREAK && text.at(j) != HWPCH_TAB)
-                            buff += text.at(j);
+                        if (valueText.at(j) != HWPCH_LINE_BREAK && valueText.at(j) != HWPCH_PARA_BREAK && valueText.at(j) != HWPCH_TAB)
+                            buff += valueText.at(j);
                     }
-                    text.assign(buff);
+                    text += buff;
                     break;
                 }
                 case ID_PARA_DrawText: {
-                    text.clear();
-                    if (pObject->HasChildList()) {
-                        OWPML::Objectlist* pDrawTextChild = pObject->GetObjectList();
-                        OWPML::Objectlist::iterator iter = pDrawTextChild->begin();
-
-                        for (iter; iter != pDrawTextChild->end(); ++iter) {
-                            OWPML::CObject* pObj = (*iter);
-                            if (pObj && pObj->GetID() == ID_PARA_ParaListType) {
-                                OWPML::Objectlist* pSubListChild = pObj->GetObjectList();
-                                OWPML::Objectlist::iterator subIter = pSubListChild->begin();
-
-                                for (subIter; subIter != pSubListChild->end(); ++subIter) {
-                                    OWPML::CObject* pSubObj = (*subIter);
-                                    if (pSubObj && pSubObj->GetID() == ID_PARA_PType) {
-                                        OWPML::CPType* para = (OWPML::CPType*)pSubObj;
-                                        OWPML::CRunType* run = NULL;
-
-                                        int paraCount = para->GetChildCount();
-                                        for (int n = 0; n < paraCount; n++) {
-                                            run = para->Getrun(n);
-
-                                            if (run) {
-                                                OWPML::CT* t = run->Gett(0);
-                                                if (t) {
-                                                    text.assign(ProcessingTextElement(t));
-                                                }
-                                            }
-                                        }
-                                    }
-
-
-                                }
-
-
-                            }
-
-                        }
-                        return text;
-                        break;
-                    }
-
+                    text += ProcessingTextElement(pObject);
+                    break;
                 }
                 case ID_PARA_TitleMark:
                 {
-                    text.clear();
                     break;
                 }
                 case ID_PARA_Tab:
                 {
-                    text.clear();
-                    text = ((char16_t)HWPCH_TAB);
+                    text += ((char16_t)HWPCH_TAB);
                     break;
                 }
                 case ID_PARA_LineBreak:
                 {
-                    text.clear();
-                    text = ((char16_t)HWPCH_LINE_BREAK);
+                    text += ((char16_t)HWPCH_LINE_BREAK);
                     break;
                 }
                 case ID_PARA_Hypen:
                 {
-                    text.clear();
-                    text = ((char16_t)HWPCH_HYPHEN);
+                    text += ((char16_t)HWPCH_HYPHEN);
                     break;
                 }
                 case ID_PARA_FwSpace:
                 {
-                    text.clear();
-                    text = ((char16_t)HWPCH_FIXED_WIDTH_SPACE);
+                    text += ((char16_t)HWPCH_FIXED_WIDTH_SPACE);
                     break;
                 }
                 case ID_PARA_NbSpace:
                 {
-                    text.clear();
-                    text = ((WCHAR)HWPCH_NON_BREAKING_SPACE);
+                    text += ((char16_t)HWPCH_NON_BREAKING_SPACE);
                     break;
                 }
                 case ID_PARA_MarkpenBegin:
                 {
-                    text.clear();
                     break;
                 }
                 case ID_PARA_MarkpenEnd:
                 {
-                    text.clear();
                     break;
                 }
                 default:
-                    text.clear();
                     break;
                 }
             }
-
-            if (!text.empty()) {
-                return text;
-            }
         } // for
     }
-    return u"";
+    return text;
 }
 
 OWPML::CPType* MetatagEX::ConvertCelltoPara(OWPML::CTc* tc)
