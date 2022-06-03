@@ -191,7 +191,7 @@ std::wstring Util::utf16_to_wstring(const std::u16string& utf16string)
 #else
     std::wstring wstrTemp;
     std::string strTemp = Util::utf16_to_string(utf16string);
-    wstrTemp.assign(strTemp.begin(), strTemp.end());
+    wstrTemp = Util::string_to_wstring(strTemp);
 
     return wstrTemp;
 #endif

@@ -162,7 +162,10 @@
   <ItemGroup>
     <ClCompile Include="CommandParser.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MetatagEX.cpp" />
+    <ClCompile Include="MetatagEX.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="util\Util.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ExcludedFromBuild>

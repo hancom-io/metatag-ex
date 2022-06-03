@@ -5,19 +5,19 @@
 
 int main(int argc, char** argv) {
     MetatagEX metatagEX;
-    if (argc >= 1)
-    {
+    if (argc >= 1) {
         bool bFile = false;
         bool bDescend = false;
         bool bSourceList = false;
         bool bDestList = false;
         bool bShowProgress = false;
         bool bHeaderOnly = false;
+        bool bChangeTagName = false;
+
         CommandParser cmdParser(argc, argv);
         if (cmdParser.ShowHelp() == true)
             return 0;
-        if (cmdParser.ParsingInput() == false)
-        {
+        if (cmdParser.ParsingInput() == false) {
             std::cout << StringResource::InvalidInput.c_str() << std::endl;
             return 0;
         }
@@ -33,23 +33,26 @@ int main(int argc, char** argv) {
             bShowProgress = CommandParser::GetCurCommandMap()->find(CommandDef::ShowProgress)->second;
         if (CommandParser::GetCurCommandMap()->find(CommandDef::HeaderOnly) != CommandParser::GetCurCommandMap()->end())
             bHeaderOnly = CommandParser::GetCurCommandMap()->find(CommandDef::HeaderOnly)->second;
-        if (bSourceList == true)
-        {
-            if (bFile == true)
-            {
-                metatagEX.ExtractMetatag(argv[argc - 2], argv[argc - 1], Option::File, bDescend ? Option::Descend : Option::Ascend, bShowProgress, bHeaderOnly);
-            } else
-            {
-                metatagEX.ExtractMetatag(argv[argc - 1], std::string(), Option::Console, bDescend ? Option::Descend : Option::Ascend, bShowProgress, bHeaderOnly);
+        if (CommandParser::GetCurCommandMap()->find(CommandDef::ChangeTagName) != CommandParser::GetCurCommandMap()->end())
+            bChangeTagName = CommandParser::GetCurCommandMap()->find(CommandDef::ChangeTagName)->second;
+
+        if (bSourceList == true) {
+            if (bFile == true) {
+                metatagEX.ExtractMetatag(cmdParser.GetSrcFilePath(), cmdParser.GetDesJsonPath(), Option::File, bDescend ? Option::Descend : Option::Ascend, bShowProgress, bHeaderOnly);
+            } else {
+                metatagEX.ExtractMetatag(cmdParser.GetSrcFilePath(), std::string(), Option::Console, bDescend ? Option::Descend : Option::Ascend, bShowProgress, bHeaderOnly);
             }
-        } else if (bDestList == true)
-        {
-            if (bFile == false)
-            {
-                metatagEX.SortMetatag(argv[argc - 2], argv[argc - 1], std::string(), Option::Console, bShowProgress, bHeaderOnly);
-            } else
-            {
-                metatagEX.SortMetatag(argv[argc - 3], argv[argc - 2], argv[argc - 1], Option::File, bShowProgress, bHeaderOnly);
+        } else if (bDestList == true) {
+            if (bFile == false) {
+                metatagEX.SortMetatag(cmdParser.GetSrcFilePath(), cmdParser.GetSrcJsonPath(), std::string(), Option::Console, bShowProgress, bHeaderOnly);
+            } else {
+                metatagEX.SortMetatag(cmdParser.GetSrcFilePath(), cmdParser.GetSrcJsonPath(), cmdParser.GetDesJsonPath(), Option::File, bShowProgress, bHeaderOnly);
+            }
+        } else if (bChangeTagName == true) {
+            if (bFile == false) {
+                metatagEX.ChangeMetatagName(cmdParser.GetSrcFilePath(), std::string(), cmdParser.GetOldTagName(), cmdParser.GetNewTagName(), bHeaderOnly);
+            } else {
+                metatagEX.ChangeMetatagName(cmdParser.GetSrcFilePath(), cmdParser.GetDesJsonPath(), cmdParser.GetOldTagName(), cmdParser.GetNewTagName(), bHeaderOnly);
             }
         }
     } else

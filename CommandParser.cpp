@@ -17,8 +17,7 @@
 #endif // OS_UNIX
 CommandParser::CommandParser(int inputArgs, char** inputArr)
 {
-    for (int i = 1; i < inputArgs; ++i)
-    {
+    for (int i = 1; i < inputArgs; ++i) {
         m_inputStrVector.push_back(inputArr[i]);
     }
     m_nPathCnt = 0;
@@ -32,11 +31,8 @@ CommandParser::~CommandParser()
 
 bool CommandParser::ShowHelp()
 {
-    std::vector<const char*>::iterator iter = m_inputStrVector.begin();
-    for (iter; iter != m_inputStrVector.end(); ++iter)
-    {
-        if (CommandWord::Help.compare(*iter) == 0)
-        {
+    for(auto iter : m_inputStrVector){
+        if (CommandWord::Help.compare(iter) == 0) {
 #ifdef OS_UNIX
             char cwd[PATH_MAX];
             getcwd(cwd, sizeof(cwd));
@@ -47,12 +43,10 @@ bool CommandParser::ShowHelp()
             std::string helpFilePath = std::string(cwd) + StringResource::PathSeperator + "MetatagEXHelp.txt";
 #endif
             std::ifstream readFile(helpFilePath);
-            if (readFile.is_open() == true)
-            {
+            if (readFile.is_open() == true) {
                 std::string s;
                 s.clear();
-                do
-                {
+                do {
                     readFile.clear();
                     getline(readFile, s);
 #ifndef OS_UNIX
@@ -78,80 +72,60 @@ bool CommandParser::ShowHelp()
 
 bool CommandParser::ParsingInput()
 {
-    if (ConfigureOption(CommandWord::GetSourceList, 1) == false)
-    {
-        if (ConfigureOption(CommandWord::GetDestList, 2) == false)
-        {
-            return false;
-        } else
-        {
-            ConfigureOption(CommandWord::ToJsonFile, 3);
-        }
-    } else
-    {
-        ConfigureOption(CommandWord::ToJsonFile, 2);
-    }
-
-    int optionIndex = 0;
-    int optionCnt = m_inputStrVector.size() - m_nPathCnt;
-    std::vector<const char*>::iterator iter = m_inputStrVector.begin();
-    for (iter; iter != m_inputStrVector.end(); ++iter)
-    {
-        if (optionIndex < optionCnt)
-            continue;
-
-    }
-
-    return true;
-}
-
-bool CommandParser::ConfigureOption(const std::string& inputStr, int pathCnt)
-{
-    bool ret = false;
     bool hasSL = false;
     bool hasDL = false;
+    bool hasSrcJson = false;
+    bool hasOldTagName = false;
+    bool isChageTagName = false;
 
-    std::vector<const char*>::iterator iter = m_inputStrVector.begin();
-    for (iter; iter != m_inputStrVector.end(); ++iter)
-    {
-        if (inputStr.compare(*iter) == 0)
-        {
-            m_nPathCnt = pathCnt;
-            ret = true;
+    for(auto& iter : m_inputStrVector){
+
+        if ((iter.find(".hwpx") != std::string::npos)) {
+            m_SrcFilePath = iter;
         }
 
-        if (CommandWord::GetDestList.compare(*iter) == 0)
-            hasDL = true;
-        
-        if (CommandWord::GetSourceList.compare(*iter) == 0)
-            hasSL = true;
+        if ((iter.find(".json") != std::string::npos) && (hasSrcJson == false && isChageTagName == false)) {
+            m_SrcJsonPath = iter;
+            hasSrcJson = true;
+        } else if ((iter.find(".json") != std::string::npos) && (hasSrcJson == true || isChageTagName == true)){
+            m_DesJsonPath = iter;
+        }
 
-        if (hasSL && hasDL)
-            return false;
+        if ((CommandParser::GetCurCommandMap()->find(CommandDef::ChangeTagName) != CommandParser::GetCurCommandMap()->end() &&
+            (iter.find("#") != std::string::npos) &&
+            hasOldTagName == false)) {
+            m_OldTagName = iter;
+            hasOldTagName = true;
+        } else if ((CommandParser::GetCurCommandMap()->find(CommandDef::ChangeTagName) != CommandParser::GetCurCommandMap()->end() &&
+            (iter.find("#") != std::string::npos) &&
+            hasOldTagName == true)) {
+            m_newTagName = iter;
+        }
 
         // Custom Define
-        if (CommandWord::GetDestList.compare(*iter) == 0)
-        {
+        if (CommandWord::GetDestList.compare(iter) == 0) {
+            hasDL = true;
             CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::DestList, true));
-        } else if (CommandWord::GetSourceList.compare(*iter) == 0)
-        {
+        } else if (CommandWord::GetSourceList.compare(iter) == 0) {
+            hasSL = true;
             CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::SourceList, true));
-        } else if (CommandWord::OrderDescend.compare(*iter) == 0)
-        {
+        } else if (CommandWord::OrderDescend.compare(iter) == 0) {
             CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::OrderDescend, true));
-        } else if (CommandWord::ToJsonFile.compare(*iter) == 0)
-        {
+        } else if (CommandWord::ToJsonFile.compare(iter) == 0) {
             CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::ToFile, true));
-        } else if (CommandWord::Help.compare(*iter) == 0)
-        {
+        } else if (CommandWord::Help.compare(iter) == 0) {
             CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::Help, true));
-        } else if (CommandWord::ShowProgress.compare(*iter) == 0)
-        {
+        } else if (CommandWord::ShowProgress.compare(iter) == 0) {
             CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::ShowProgress, true));
-        } else if (CommandWord::HeaderOnly.compare(*iter) == 0)
-        {
+        } else if (CommandWord::HeaderOnly.compare(iter) == 0) {
             CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::HeaderOnly, true));
-        }
+        } else if (CommandWord::ChangeTagName.compare(iter) == 0) {
+            CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::ChangeTagName, true));
+            isChageTagName = true;
+        } 
+
+        if (hasDL && hasSL)
+            return false;
     }
-    return ret;
+    return true;
 }
