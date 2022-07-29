@@ -3,18 +3,30 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.1831
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetatagEX", "MetatagEX.vcxproj", "{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWPML", "opensource\hwpx-owpml-model\OWPML\OWPML.vcxproj", "{2C5A1DC7-BB24-4D04-9B61-5D9FB07E3DEB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{493F7940-8142-4886-ABF7-AF2053596364} = {493F7940-8142-4886-ABF7-AF2053596364}
+		{809B77D2-2E46-40EA-AC9B-8F7416FBF78C} = {809B77D2-2E46-40EA-AC9B-8F7416FBF78C}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWPMLApi", "opensource\hwpx-owpml-model\OWPMLApi\OWPMLApi.vcxproj", "{809B77D2-2E46-40EA-AC9B-8F7416FBF78C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{493F7940-8142-4886-ABF7-AF2053596364} = {493F7940-8142-4886-ABF7-AF2053596364}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWPMLUtil", "opensource\hwpx-owpml-model\OWPMLUtil\OWPMLUtil.vcxproj", "{493F7940-8142-4886-ABF7-AF2053596364}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetatagEX", "MetatagEx\MetatagEX.vcxproj", "{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7B908B9E-39C9-4227-A481-87F672D2A399} = {7B908B9E-39C9-4227-A481-87F672D2A399}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MetatagBase", "MetatagBase\MetatagBase.vcxproj", "{7B908B9E-39C9-4227-A481-87F672D2A399}"
 	ProjectSection(ProjectDependencies) = postProject
 		{493F7940-8142-4886-ABF7-AF2053596364} = {493F7940-8142-4886-ABF7-AF2053596364}
 		{2C5A1DC7-BB24-4D04-9B61-5D9FB07E3DEB} = {2C5A1DC7-BB24-4D04-9B61-5D9FB07E3DEB}
 		{809B77D2-2E46-40EA-AC9B-8F7416FBF78C} = {809B77D2-2E46-40EA-AC9B-8F7416FBF78C}
 	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWPML", "opensource\hwpx-owpml-model\OWPML\OWPML.vcxproj", "{2C5A1DC7-BB24-4D04-9B61-5D9FB07E3DEB}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWPMLApi", "opensource\hwpx-owpml-model\OWPMLApi\OWPMLApi.vcxproj", "{809B77D2-2E46-40EA-AC9B-8F7416FBF78C}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OWPMLUtil", "opensource\hwpx-owpml-model\OWPMLUtil\OWPMLUtil.vcxproj", "{493F7940-8142-4886-ABF7-AF2053596364}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,14 +36,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Debug|x64.ActiveCfg = Debug|x64
-		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Debug|x64.Build.0 = Debug|x64
-		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Debug|x86.ActiveCfg = Debug|Win32
-		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Debug|x86.Build.0 = Debug|Win32
-		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Release|x64.ActiveCfg = Release|x64
-		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Release|x64.Build.0 = Release|x64
-		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Release|x86.ActiveCfg = Release|Win32
-		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Release|x86.Build.0 = Release|Win32
 		{2C5A1DC7-BB24-4D04-9B61-5D9FB07E3DEB}.Debug|x64.ActiveCfg = Debug|x64
 		{2C5A1DC7-BB24-4D04-9B61-5D9FB07E3DEB}.Debug|x64.Build.0 = Debug|x64
 		{2C5A1DC7-BB24-4D04-9B61-5D9FB07E3DEB}.Debug|x86.ActiveCfg = Debug|Win32
@@ -56,6 +60,22 @@ Global
 		{493F7940-8142-4886-ABF7-AF2053596364}.Release|x64.Build.0 = Release|x64
 		{493F7940-8142-4886-ABF7-AF2053596364}.Release|x86.ActiveCfg = Release|Win32
 		{493F7940-8142-4886-ABF7-AF2053596364}.Release|x86.Build.0 = Release|Win32
+		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Debug|x64.ActiveCfg = Debug|x64
+		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Debug|x64.Build.0 = Debug|x64
+		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Debug|x86.ActiveCfg = Debug|Win32
+		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Debug|x86.Build.0 = Debug|Win32
+		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Release|x64.ActiveCfg = Release|x64
+		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Release|x64.Build.0 = Release|x64
+		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Release|x86.ActiveCfg = Release|Win32
+		{6B6D97C3-A355-49ED-8A85-F06C67A57DC1}.Release|x86.Build.0 = Release|Win32
+		{7B908B9E-39C9-4227-A481-87F672D2A399}.Debug|x64.ActiveCfg = Debug|x64
+		{7B908B9E-39C9-4227-A481-87F672D2A399}.Debug|x64.Build.0 = Debug|x64
+		{7B908B9E-39C9-4227-A481-87F672D2A399}.Debug|x86.ActiveCfg = Debug|Win32
+		{7B908B9E-39C9-4227-A481-87F672D2A399}.Debug|x86.Build.0 = Debug|Win32
+		{7B908B9E-39C9-4227-A481-87F672D2A399}.Release|x64.ActiveCfg = Release|x64
+		{7B908B9E-39C9-4227-A481-87F672D2A399}.Release|x64.Build.0 = Release|x64
+		{7B908B9E-39C9-4227-A481-87F672D2A399}.Release|x86.ActiveCfg = Release|Win32
+		{7B908B9E-39C9-4227-A481-87F672D2A399}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

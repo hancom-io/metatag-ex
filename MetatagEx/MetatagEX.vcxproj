@@ -70,8 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
     <ExtensionsToDeleteOnClean>*.txt;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -79,8 +79,8 @@
     <IntDir>$(ProjectDir)$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(ProjectDir)$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
     <ExtensionsToDeleteOnClean>*.txt</ExtensionsToDeleteOnClean>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>./../;./;../;$(ProjectDir)opensource\hwpx-owpml-model\OWPML\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLApi\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLUtil\;$(ProjectDir)opensource\hwpx-owpml-model\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;$(SolutionDir)MetatagBase\;$(SolutionDir)opensource\hwpx-owpml-model\OWPML\;$(SolutionDir)opensource\hwpx-owpml-model\OWPMLApi\;$(SolutionDir)opensource\hwpx-owpml-model\OWPMLUtil\;$(SolutionDir)opensource\hwpx-owpml-model\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PreprocessorDefinitions>OS_WIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -98,11 +98,11 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>OWPMLd.lib;OWPMLApi.lib;OWPMLUtil.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)opensource\hwpx-owpml-model\Build\BinDebug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>MetatagBase.lib;OWPMLd.lib;OWPMLApi.lib;OWPMLUtil.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)\;$(SolutionDir)opensource\hwpx-owpml-model\Build\BinDebug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)MetatagEXHelp.txt $(ProjectDir)$(Configuration)\ /Y</Command>
+      <Command>copy $(SolutionDir)MetatagEXHelp.txt $(SolutionDir)$(Configuration)\ /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -130,18 +130,19 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>./../;./;../;$(ProjectDir)opensource\hwpx-owpml-model\OWPML\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLApi\;$(ProjectDir)opensource\hwpx-owpml-model\OWPMLUtil\;$(ProjectDir)opensource\hwpx-owpml-model\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../;$(SolutionDir)MetatagBase\;$(SolutionDir)opensource\hwpx-owpml-model\OWPML\;$(SolutionDir)opensource\hwpx-owpml-model\OWPMLApi\;$(SolutionDir)opensource\hwpx-owpml-model\OWPMLUtil\;$(SolutionDir)opensource\hwpx-owpml-model\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+      <PreprocessorDefinitions>OS_WIN;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(ProjectDir)opensource\hwpx-owpml-model\Build\Bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OWPML.lib;OWPMLApi.lib;OWPMLUtil.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration)\;$(SolutionDir)opensource\hwpx-owpml-model\Build\Bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>MetatagBase.lib;OWPML.lib;OWPMLApi.lib;OWPMLUtil.lib;</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)MetatagEXHelp.txt $(ProjectDir)$(Configuration)\ /Y</Command>
+      <Command>copy $(SolutionDir)MetatagEXHelp.txt $(SolutionDir)$(Configuration)\ /Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -160,31 +161,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CommandParser.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MetatagEX.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="util\Util.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CommandParser.h" />
-    <ClInclude Include="EXdefine.h" />
-    <ClInclude Include="MetatagEX.h" />
-    <ClInclude Include="util\Util.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </ExcludedFromBuild>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="MetatagEXHelp.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
