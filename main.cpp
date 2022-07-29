@@ -38,7 +38,7 @@ int main(int argc, char** argv) {
 
         if (bSourceList == true) {
             if (bFile == true) {
-                metatagEX.ExtractMetatag(cmdParser.GetSrcFilePath(), cmdParser.GetDesJsonPath(), Option::File, bDescend ? Option::Descend : Option::Ascend, bShowProgress, bHeaderOnly);
+                metatagEX.ExtractMetatag(cmdParser.GetSrcFilePath(), cmdParser.GetSrcJsonPath(), Option::File, bDescend ? Option::Descend : Option::Ascend, bShowProgress, bHeaderOnly);
             } else {
                 metatagEX.ExtractMetatag(cmdParser.GetSrcFilePath(), std::string(), Option::Console, bDescend ? Option::Descend : Option::Ascend, bShowProgress, bHeaderOnly);
             }

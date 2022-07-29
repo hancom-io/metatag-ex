@@ -1,27 +1,12 @@
 ﻿#ifndef _METATAGEX_
 #define _METATAGEX_
 
-#include <iostream>
 #include <thread>
 #include <map>
-#include <set>
-#include <list>
-#include <vector>
-#include <algorithm>
-#include <limits.h>
-#include <stdlib.h>
 #include <stack>
 #include "./util/Util.h"
 #include "EXdefine.h"
-#ifdef US_UNIX
-#include "./extend/XmlParser.h"
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/istreamwrapper.h"
-#include "rapidjson/ostreamwrapper.h"
-#else
+
 #include "./opensource/rapidjson/include/rapidjson/document.h"
 #include "./opensource/rapidjson/include/rapidjson/writer.h"
 #include "./opensource/rapidjson/include/rapidjson/stringbuffer.h"
@@ -32,7 +17,7 @@
 #include "./opensource/hwpx-owpml-model/OWPMLApi/OWPMLDocument.h"
 #include "./opensource/hwpx-owpml-model/OWPML/Base/Object.h"
 #include "./opensource/hwpx-owpml-model/OWPML/Class/classinclude.h"
-#endif
+
 
 
 class MetatagEX
@@ -113,16 +98,6 @@ private:
     std::u16string GetObjectTypeText(unsigned int id);
     bool ImportMetatagFromJson(std::string path, rapidjson::Document &jsonDoc);
 
-#ifdef OS_UNIX
-    void SearchString(std::string srcfilePath, DOMNode* node);
-    void SortShape(DOMNode* node, std::string srcfilePath);
-    void SortTable(DOMNode* node, std::string srcfilePath);
-
-    void TraverseTable(DOMNode* node, std::string srcfilePath);
-    void TraverseShape(DOMNode* node, std::string srcfilePath);
-    void ExtractShape(DOMNode* node, std::string srcfilePath);
-    void ExtractString(std::string srcfilePath, DOMNode* node, std::string origin);
-#else
     void SearchHeader(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document = NULL);
     void SearchSection(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document = NULL);
     void SearchString(std::string srcfilePath, std::string tag);
@@ -135,7 +110,7 @@ private:
     std::u16string GetMetaTagContent(OWPML::CObject* object);
     OWPML::CPType* ConvertCelltoPara(OWPML::CTc* tc);
     std::u16string ProcessingTextElement(OWPML::CObject* object, int type = OWPML::FIELDTYPE::FT_NONE);
-#endif
+
 };
 
 #endif //_METATAGEX_

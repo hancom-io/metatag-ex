@@ -1,15 +1,10 @@
 ﻿#ifndef _METATAGEX_COMMANDPARSER_
 #define _METATAGEX_COMMANDPARSER_
 
-#include <vector>
-#include <map>
-#include <iostream>
-#ifndef OS_UNIX
-#include <atlstr.h>
 #include <Windows.h>
-#include <direct.h>
-#endif
+#include <map>
 #include <string>
+
 enum CommandDef
 {
     ToFile,

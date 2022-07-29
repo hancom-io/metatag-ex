@@ -1,20 +1,9 @@
 ﻿#include <fstream>
+#include <vector>
+#include <direct.h>
 #include "CommandParser.h"
 #include "EXdefine.h" // StringResource
-#ifdef OS_UNIX
-#include <unistd.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <archive.h>
-#include <archive_entry.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <limits.h>
-#endif // OS_UNIX
+
 CommandParser::CommandParser(int inputArgs, char** inputArr)
 {
     for (int i = 1; i < inputArgs; ++i) {
@@ -33,15 +22,9 @@ bool CommandParser::ShowHelp()
 {
     for(auto iter : m_inputStrVector){
         if (CommandWord::Help.compare(iter) == 0) {
-#ifdef OS_UNIX
-            char cwd[PATH_MAX];
-            getcwd(cwd, sizeof(cwd));
-            std::string helpFilePath = std::string(cwd) + StringResource::PathSeperator + ".." + StringResource::PathSeperator + "MetatagEXHelp.txt";
-#else
             char cwd[MAX_PATH];
             _getcwd(cwd, sizeof(cwd));
             std::string helpFilePath = std::string(cwd) + StringResource::PathSeperator + "MetatagEXHelp.txt";
-#endif
             std::ifstream readFile(helpFilePath);
             if (readFile.is_open() == true) {
                 std::string s;
@@ -49,7 +32,7 @@ bool CommandParser::ShowHelp()
                 do {
                     readFile.clear();
                     getline(readFile, s);
-#ifndef OS_UNIX
+
                     WCHAR* converted = new WCHAR[s.length() + 1];
                     int nLen = MultiByteToWideChar(CP_UTF8, 0, s.c_str(), s.length() + 1, NULL, NULL);
                     MultiByteToWideChar(CP_UTF8, 0, s.c_str(), s.length() + 1, converted, nLen);
@@ -57,9 +40,7 @@ bool CommandParser::ShowHelp()
                     HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
                     WriteConsoleW(output, converted, (DWORD)::wcslen(converted), &dwWritten, NULL);
                     delete converted;
-#else	// OS_UNIX
-                    std::cout << s << std::endl;
-#endif
+
                     std::cout << std::endl;
                 } while (readFile);
                 readFile.close();

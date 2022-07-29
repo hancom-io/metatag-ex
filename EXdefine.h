@@ -8,11 +8,7 @@ namespace StringResource
     const std::string NoJsonFile = "Input Json File Not Exists";
     const std::string ExtractionFailed = " Extraction Failed!";
     const std::string Complete = "Complete!";
-#ifdef OS_UNIX
-    const std::string PathSeperator = "/";
-#else // OS_UNIX
     const std::string PathSeperator = "\\";
-#endif
 };
 
 namespace Defines
