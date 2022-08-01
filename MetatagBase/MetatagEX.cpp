@@ -8,30 +8,6 @@
 
 #define	F_OK	0
 
-void MetatagEX::Initialize()
-{
-    MetatagEX::GetSortedMetatag()->clear();
-    MetatagEX::GetMetatagContainer()->clear();
-    MetatagEX::GetFindMetatagVector()->clear();
-    MetatagEX::GetTagIndex(false, true);
-    MetatagEX::GetFileIndex(false, true);
-}
-
-void MetatagEX::CalcPercentProc(int nFileCnt)
-{
-    int curIndex = -1;
-    while (GetFileIndex(false, false) != nFileCnt) {
-        if (curIndex != GetFileIndex(false, false)) {
-            curIndex = GetFileIndex(false, false);
-            printf("%d", (curIndex * 100) / nFileCnt);
-            std::cout << "%" << std::endl;
-        }
-        curIndex = GetFileIndex(false, false);
-    }
-    std::cout << StringResource::Complete << std::endl;
-    return;
-}
-
 bool MetatagEX::ImportMetatagFromJson(std::string path, rapidjson::Document &jsonDoc)
 {
     if (_access(path.c_str(), F_OK) < 0 ) {
@@ -70,8 +46,6 @@ bool MetatagEX::ImportMetatagFromJson(std::string path, rapidjson::Document &jso
 
 void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bShowProgress, bool bHeaderOnly)
 {
-    Initialize();
-
     rapidjson::Document jsonDoc;
 
     if (!ImportMetatagFromJson(jsonPath, jsonDoc))
@@ -79,10 +53,7 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
 
     std::vector<std::string> files;
     std::string regexStr = Util::getdir(inputPath, files);
-    std::thread* CountingThread = NULL;
-    if (bShowProgress) {
-        CountingThread = new std::thread(CalcPercentProc, files.size());
-    }
+
     for (auto& iter_file : files) {
         std::regex reg;
         try {
@@ -109,15 +80,12 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
 
         }
 
-        SearchHeader("", srcPath, document);
+        SearchHeader(srcPath, document);
         if (bHeaderOnly == false) {
-            SearchSection("", srcPath, document);
+            SearchSection(srcPath, document);
         }
     }
-    if (CountingThread != NULL) {
-        CountingThread->join();
-        delete CountingThread;
-    }
+
     if (option == Option::Console) {
         for (auto& iter_sorted : sortedMetatag) {
             std::cout << iter_sorted.first << " : " << iter_sorted.second << std::endl;
@@ -143,7 +111,7 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
     }
 }
 
-void MetatagEX::SearchHeader(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document)
+void MetatagEX::SearchHeader(std::string srcfilePath, OWPML::COwpmlDocumnet* document)
 {
     OWPML::Objectlist* objList = document->GetHead()->GetObjectList();
     for (auto& iter_obj : *objList) {
@@ -157,7 +125,7 @@ void MetatagEX::SearchHeader(std::string path, std::string srcfilePath, OWPML::C
 }
 
 
-void MetatagEX::SearchSection(std::string path, std::string srcfilePath, OWPML::COwpmlDocumnet* document)
+void MetatagEX::SearchSection(std::string srcfilePath, OWPML::COwpmlDocumnet* document)
 {
     std::vector<OWPML::CSectionType*>::iterator iter_section = document->GetSections()->begin();
     for (iter_section; iter_section != document->GetSections()->end(); ++iter_section) {
@@ -187,7 +155,6 @@ bool MetatagEX::ChangeMetatagName(std::string inputPath, std::string jsonPath, s
 {
     std::vector<std::string> files;
     std::string regexStr = Util::getdir(inputPath, files);
-    std::thread* CountingThread = NULL;
 
     rapidjson::Document jsonDoc;
     jsonDoc.SetObject();
@@ -222,9 +189,9 @@ bool MetatagEX::ChangeMetatagName(std::string inputPath, std::string jsonPath, s
         char* fileName;
         GetFullPathNameA(srcPath.c_str(), MAX_PATH, fullPath, &fileName);
 
-        TraverseHeader("", srcPath, &matatag, document);
+        TraverseHeader(srcPath, &matatag, document);
         if (bHeaderOnly == false) {
-            TraverseSection("", srcPath, &matatag, document);
+            TraverseSection(srcPath, &matatag, document);
         }
 
         for (auto& tag : matatag) {
@@ -289,17 +256,12 @@ bool MetatagEX::ChangeMetatagName(std::string inputPath, std::string jsonPath, s
 
 void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc, bool bShowProgress, bool bHeaderOnly)
 {
-    Initialize();
-
     rapidjson::Document jsonDoc;
     jsonDoc.SetObject();
 
     std::vector<std::string> files;
     std::string regexStr = Util::getdir(inputPath, files);
-    std::thread* CountingThread = NULL;
-    if (bShowProgress) {
-        CountingThread = new std::thread(CalcPercentProc, files.size());
-    }
+
     for (auto& iter_file : files) {
         std::regex reg;
         try {
@@ -331,29 +293,14 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
         char* fileName;
         GetFullPathNameA(srcPath.c_str(), MAX_PATH, fullPath, &fileName);
 
-        TraverseHeader("", srcPath, &matatag, document);
+        TraverseHeader(srcPath, &matatag, document);
         if (bHeaderOnly == false) {
-            TraverseSection("", srcPath, &matatag, document);
+            TraverseSection(srcPath, &matatag, document);
         }
 
         tagContainer.push_back(std::make_pair(fileName, matatag));
 
         delete document;
-    }
-
-    if (CountingThread != NULL) {
-        CountingThread->join();
-        delete CountingThread;
-    }
-
-    // 위쪽으로 옮겨서 수정 필요
-    //Order
-    if (dsc == Option::Descend) {
-        std::sort(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end(), std::greater<std::pair<std::u16string, std::map<std::string, std::string>>>());
-        std::unique(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end());
-    } else {
-        std::sort(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end(), std::less<std::pair<std::u16string, std::map<std::string, std::string>>>());
-        std::unique(MetatagEX::GetMetatagContainer()->begin(), MetatagEX::GetMetatagContainer()->end());
     }
 
     std::vector<std::pair<std::u16string, std::map<std::string, std::string>>>::iterator iter;
@@ -439,7 +386,7 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
     }
 }
 
-void MetatagEX::TraverseHeader(std::string path, std::string srcfilePath, std::vector<METATAG>* metatag, OWPML::COwpmlDocumnet* document)
+void MetatagEX::TraverseHeader(std::string srcfilePath, std::vector<METATAG>* metatag, OWPML::COwpmlDocumnet* document)
 {
     OWPML::Objectlist* objList = document->GetHead()->GetObjectList();
     for (auto& iter_obj : *objList) {
@@ -452,7 +399,7 @@ void MetatagEX::TraverseHeader(std::string path, std::string srcfilePath, std::v
     }
 }
 
-void MetatagEX::TraverseSection(std::string path, std::string srcfilePath, std::vector<METATAG>* metatag, OWPML::COwpmlDocumnet* document)
+void MetatagEX::TraverseSection(std::string srcfilePath, std::vector<METATAG>* metatag, OWPML::COwpmlDocumnet* document)
 {
     std::vector<OWPML::CSectionType*>::iterator iter_section = document->GetSections()->begin();
     for (iter_section; iter_section != document->GetSections()->end(); ++iter_section) {
