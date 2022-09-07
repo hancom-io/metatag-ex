@@ -12,9 +12,9 @@ enum CommandDef
     SourceList,
     DestList,
     Help,
-    ShowProgress,
     HeaderOnly,
-    ChangeTagName
+    ChangeTagName,
+    SaveToOrigin
 };
 namespace CommandWord
 {
@@ -23,9 +23,9 @@ namespace CommandWord
     static std::string GetSourceList = "-sl";
     static std::string GetDestList = "-dl";
     static std::string Help = "-o";
-    static std::string ShowProgress = "-pr";
     static std::string HeaderOnly = "-doc";
     static std::string ChangeTagName = "-c";
+    static std::string SaveToOrigin = "-cso";
 }
 class CommandParser
 {

@@ -8,43 +8,75 @@
 
 #define	F_OK	0
 
-bool MetatagEX::ImportMetatagFromJson(std::string path, rapidjson::Document &jsonDoc)
-{
-    if (_access(path.c_str(), F_OK) < 0 ) {
-        std::cout << StringResource::NoJsonFile << std::endl;
+bool MetaTagCompare(MetatagEX::METATAG& tag1, MetatagEX::METATAG& tag2) {
+    if (tag1.tagName.compare(tag2.tagName) > 0)
         return false;
-    }
-    std::ifstream ifs(path);
-    rapidjson::IStreamWrapper isw(ifs);
-    jsonDoc.ParseStream(isw);
-    rapidjson::StringBuffer buffer{};
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer{ buffer };
-    jsonDoc.Accept(writer);
-
-    if (jsonDoc.HasParseError()) {
-        std::cout << "Invalid Input" << std::endl;
-
-        return false;
-    }
-
-    rapidjson::Value::MemberIterator itr = jsonDoc.MemberBegin();
-    for (itr; itr != jsonDoc.MemberEnd(); ++itr) {
-        if (itr->value.GetType() == rapidjson::kArrayType) {
-
-            for (auto& arr : itr->value.GetArray()) {
-                if (arr.IsObject()) {
-                    rapidjson::Value var = arr.GetObj();
-                    tagNameContainer.push_back(var["tagName"].GetString());
-                }
-            }
-        } else if (itr->value.GetType() == rapidjson::kStringType) {
-            tagNameContainer.push_back(itr->value.GetString());
-        }
-    }
     return true;
 }
 
-void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bShowProgress, bool bHeaderOnly)
+OWPML::COwpmlDocumnet* MetatagEX::ExtractMetatag(std::string inputPath, std::string file, std::string regexStr, std::vector<METATAG>* metatag, bool bHeaderOnly, bool isExtract)
+{
+    std::regex reg;
+    try {
+        if (regexStr.find(".hwpx") == std::string::npos)
+            regexStr.append(".hwpx");
+
+        reg = std::regex(regexStr);
+    }
+    catch (std::regex_error::exception e) {
+        reg = std::regex("^.*.hwpx$");
+    }
+
+    std::smatch match;
+    if (std::regex_search(file, match, reg) == false) {
+        return false;
+    }
+
+    std::string srcPath = inputPath + StringResource::PathSeperator + file;
+    std::wstring docPath = Util::string_to_wstring(srcPath);
+
+    OWPML::COwpmlDocumnet* document = OWPML::COwpmlDocumnet::OpenDocument(docPath.c_str());
+    if (document == NULL) {
+        return NULL;
+
+    }
+
+    TraverseHeader(isExtract, srcPath, document, metatag);
+    if (bHeaderOnly == false) {
+        TraverseSection(isExtract, srcPath, document, metatag);
+    }
+
+    return document;
+}
+
+void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc, bool bHeaderOnly)
+{
+    std::vector<std::string> files;
+    std::string regexStr = Util::getdir(inputPath, files);
+
+    for (auto& iter_file : files) {
+        std::vector<METATAG> metatag;
+
+        OWPML::COwpmlDocumnet* document = ExtractMetatag(inputPath, iter_file, regexStr, &metatag, bHeaderOnly, true);
+        if (document == NULL) {
+            continue;
+        } else {
+            if (dsc == Option::Descend)
+                std::sort(metatag.begin(), metatag.end());
+            else if (dsc == Option::Ascend)
+                std::sort(metatag.begin(), metatag.end(), MetaTagCompare);
+
+            tagContainer.push_back(std::make_pair(iter_file, metatag));
+        }
+
+        delete document;
+    }
+
+    ExportMetatagData(option, outputPath);
+
+}
+
+void MetatagEX::ClaasifyMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bHeaderOnly)
 {
     rapidjson::Document jsonDoc;
 
@@ -55,34 +87,13 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
     std::string regexStr = Util::getdir(inputPath, files);
 
     for (auto& iter_file : files) {
-        std::regex reg;
-        try {
-            if (regexStr.find(".hwpx") == std::string::npos)
-                regexStr.append(".hwpx");
+        std::vector<METATAG> metatag;
 
-            reg = std::regex(regexStr);
-        }
-        catch (std::regex_error::exception e) {
-            reg = std::regex("^.*.hwpx$");
-        }
-
-        std::smatch match;
-        if (std::regex_search(iter_file, match, reg) == false) {
-            continue;
-        }
-
-        std::string srcPath = inputPath + StringResource::PathSeperator + iter_file;
-        std::wstring docPath = Util::string_to_wstring(srcPath);
-
-        OWPML::COwpmlDocumnet* document = OWPML::COwpmlDocumnet::OpenDocument(docPath.c_str());
+        OWPML::COwpmlDocumnet* document = ExtractMetatag(inputPath, iter_file, regexStr, &metatag, bHeaderOnly, false);
         if (document == NULL) {
-            return;
-
-        }
-
-        SearchHeader(srcPath, document);
-        if (bHeaderOnly == false) {
-            SearchSection(srcPath, document);
+            continue;
+        } else {
+            delete document;
         }
     }
 
@@ -91,239 +102,16 @@ void MetatagEX::SortMetatag(std::string inputPath, std::string jsonPath, std::st
             std::cout << iter_sorted.first << " : " << iter_sorted.second << std::endl;
         }
     } else if (option == Option::File) {
-        jsonDoc.SetObject();
-        auto& allocator = jsonDoc.GetAllocator();
-
-        std::sort(sortedMetatag.begin(), sortedMetatag.end(), std::less<std::pair<std::string, std::string>>());
-
-        for (auto& iter_sorted : sortedMetatag) {
-            auto& allocator = jsonDoc.GetAllocator();
-            rapidjson::Value key(iter_sorted.first.c_str(), allocator);
-            rapidjson::Value val(iter_sorted.second.c_str(), allocator);
-            jsonDoc.AddMember(key, val, allocator);
-        }
-        std::ofstream ofs(outputPath);
-        rapidjson::OStreamWrapper osw(ofs);
-
-        rapidjson::PrettyWriter<rapidjson::OStreamWrapper> writer(osw);
-        jsonDoc.Accept(writer);
-        ofs.close();
+        ExportToJson(ExportType::ClaasifyTag, &outputPath);
     }
 }
 
-void MetatagEX::SearchHeader(std::string srcfilePath, OWPML::COwpmlDocumnet* document)
-{
-    OWPML::Objectlist* objList = document->GetHead()->GetObjectList();
-    for (auto& iter_obj : *objList) {
-        OWPML::Objectlist result;
-        GetMetaTagObject(iter_obj, result);
-        for (auto& iterTagObj : result) {
-            std::string metatagWStr = Util::utf16_to_string(GetMetaTagName(iterTagObj));
-            SearchString(srcfilePath, metatagWStr);
-        }
-    }
-}
-
-
-void MetatagEX::SearchSection(std::string srcfilePath, OWPML::COwpmlDocumnet* document)
-{
-    std::vector<OWPML::CSectionType*>::iterator iter_section = document->GetSections()->begin();
-    for (iter_section; iter_section != document->GetSections()->end(); ++iter_section) {
-        std::multimap<std::u16string, OWPML::CObject*> objectList;
-        GetMetaTagObject(*iter_section, objectList);
-
-        for (auto& iter_object : objectList) {
-            std::string metatagWStr = Util::utf16_to_string((iter_object).first);
-            SearchString(srcfilePath, metatagWStr);
-        }
-    }
-}
-
-void MetatagEX::SearchString(std::string srcfilePath, std::string tag) {
-    std::vector<std::string>::iterator iter_find = std::find(tagNameContainer.begin(), tagNameContainer.end(), tag);
-
-    if (iter_find != tagNameContainer.end()) {
-        char fullPath[MAX_PATH];
-        char* fileName;
-        GetFullPathNameA(srcfilePath.c_str(), MAX_PATH, fullPath, &fileName);
-
-        sortedMetatag.push_back(make_pair(*iter_find, fullPath));
-    }
-}
-
-bool MetatagEX::ChangeMetatagName(std::string inputPath, std::string jsonPath, std::string oldTagName, std::string newTagName, bool bHeaderOnly)
-{
-    std::vector<std::string> files;
-    std::string regexStr = Util::getdir(inputPath, files);
-
+void MetatagEX::ExportToJson(ExportType type, std::string* jsonPath, std::string* srcPath, std::string* oldTagName, std::string* newTagName, METATAG* tag) {
     rapidjson::Document jsonDoc;
     jsonDoc.SetObject();
+    auto& allocator = jsonDoc.GetAllocator();
 
-    for (auto& iter_file : files) {
-        std::regex reg;
-        try {
-            if (regexStr.find(".hwpx") == std::string::npos)
-                regexStr.append(".hwpx");
-
-            reg = std::regex(regexStr);
-        }
-        catch (std::regex_error::exception e) {
-            reg = std::regex("^.*.hwpx$");
-        }
-
-        std::smatch match;
-        if (std::regex_search(iter_file, match, reg) == false) {
-            continue;
-        }
-
-        std::string srcPath = inputPath + StringResource::PathSeperator + iter_file;
-        std::wstring docPath = Util::string_to_wstring(srcPath);
-
-        OWPML::COwpmlDocumnet* document = OWPML::COwpmlDocumnet::OpenDocument(docPath.c_str());
-        if (document == NULL) {
-            return false;
-        }
-
-        std::vector<METATAG> matatag;
-        char fullPath[MAX_PATH];
-        char* fileName;
-        GetFullPathNameA(srcPath.c_str(), MAX_PATH, fullPath, &fileName);
-
-        TraverseHeader(srcPath, &matatag, document);
-        if (bHeaderOnly == false) {
-            TraverseSection(srcPath, &matatag, document);
-        }
-
-        for (auto& tag : matatag) {
-            if (SetMetaTagName(tag.object, Util::string_to_utf16(oldTagName), Util::string_to_utf16(newTagName))) {
-                if (jsonPath.empty() == false) {
-                    auto& allocator = jsonDoc.GetAllocator();
-                    rapidjson::Value fileNameArray(rapidjson::kArrayType);
-                    fileNameArray.SetArray();
-                    rapidjson::Value objectAttribute(rapidjson::kObjectType);
-                    objectAttribute.SetObject();
-
-                    rapidjson::Value keyOldName("oldTagName", allocator);
-                    rapidjson::Value valOldName(oldTagName.c_str(), allocator);
-                    objectAttribute.AddMember(keyOldName, valOldName, allocator);
-
-                    rapidjson::Value keyNewName("newTagName", allocator);
-                    rapidjson::Value valNewName(newTagName.c_str(), allocator);
-                    objectAttribute.AddMember(keyNewName, valNewName, allocator);
-
-                    rapidjson::Value keyObj("objectType", allocator);
-                    rapidjson::Value valObj(tag.objectType.c_str(), allocator);
-                    objectAttribute.AddMember(keyObj, valObj, allocator);
-
-                    fileNameArray.PushBack(objectAttribute, allocator);
-
-                    rapidjson::Value fileName(srcPath.c_str(), allocator);
-                    jsonDoc.AddMember(fileName, fileNameArray, allocator);
-
-                    std::ofstream ofs(jsonPath);
-                    rapidjson::OStreamWrapper osw(ofs);
-
-                    rapidjson::PrettyWriter<rapidjson::OStreamWrapper> writer(osw);
-                    jsonDoc.Accept(writer);
-                    ofs.close();
-                }
-            }
-        }
-
-        WCHAR tmpPath[_MAX_PATH];
-        WCHAR index[10] = { 0, };
-
-        wcscpy_s(tmpPath, _countof(tmpPath), docPath.c_str());
-        int n = 1;
-
-        while (PathFileExistsW(tmpPath)) {
-            ZeroMemory(tmpPath, _MAX_PATH);
-            wcscpy_s(tmpPath, _countof(tmpPath), docPath.c_str());
-            PathRemoveExtensionW(tmpPath);
-            swprintf_s(index, _countof(index), L"_%d", n++);
-            wcscat_s(tmpPath, _countof(tmpPath), index);
-            PathAddExtensionW(tmpPath, L".hwpx");
-        }
-
-        docPath = tmpPath;
-        document->SaveDocument(docPath.c_str());
-
-        delete document;
-    }
-
-    return true;
-}
-
-void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc, bool bShowProgress, bool bHeaderOnly)
-{
-    rapidjson::Document jsonDoc;
-    jsonDoc.SetObject();
-
-    std::vector<std::string> files;
-    std::string regexStr = Util::getdir(inputPath, files);
-
-    for (auto& iter_file : files) {
-        std::regex reg;
-        try {
-            if (regexStr.find(".hwpx") == std::string::npos)
-                regexStr.append(".hwpx");
-
-            reg = std::regex(regexStr);
-        }
-        catch (std::regex_error::exception e) {
-            reg = std::regex("^.*.hwpx$");
-        }
-
-        std::smatch match;
-        if (std::regex_search(iter_file, match, reg) == false) {
-            continue;
-        }
-
-        std::string srcPath = inputPath + StringResource::PathSeperator + iter_file;
-        std::wstring docPath = Util::string_to_wstring(srcPath);
-
-        OWPML::COwpmlDocumnet* document = OWPML::COwpmlDocumnet::OpenDocument(docPath.c_str());
-        if (document == NULL) {
-            return;
-
-        }
-
-        std::vector<METATAG> matatag;
-        char fullPath[MAX_PATH];
-        char* fileName;
-        GetFullPathNameA(srcPath.c_str(), MAX_PATH, fullPath, &fileName);
-
-        TraverseHeader(srcPath, &matatag, document);
-        if (bHeaderOnly == false) {
-            TraverseSection(srcPath, &matatag, document);
-        }
-
-        tagContainer.push_back(std::make_pair(fileName, matatag));
-
-        delete document;
-    }
-
-    std::vector<std::pair<std::u16string, std::map<std::string, std::string>>>::iterator iter;
-    if (option == Option::Console) {
-        for (auto& iter : tagContainer) {
-            std::cout << "fileName : [" << iter.first << std::endl;
-            for (auto& file : iter.second) {
-                std::cout << "tagName : " << file.tagName << std::endl;
-
-                std::cout << "filePath : " << file.filePath << std::endl;
-
-                std::cout << "objectType : " << file.objectType << std::endl;
-
-                if (file.contentText.empty() == false)
-                    std::cout << "contentText : " << file.contentText << std::endl;
-
-                std::cout << std::endl;
-            }
-            std::cout << "]" << iter.first << std::endl << std::endl;
-        }
-    } else if (option == Option::File) {
-
-        auto& allocator = jsonDoc.GetAllocator();
+    if (type == ExportType::ExtractTag) {
         for (auto& file : tagContainer) {
             rapidjson::Value fileNameArray(rapidjson::kArrayType);
             fileNameArray.SetArray();
@@ -377,39 +165,198 @@ void MetatagEX::ExtractMetatag(std::string inputPath, std::string outputPath, Op
             rapidjson::Value fileName(file.first.c_str(), allocator);
             jsonDoc.AddMember(fileName, fileNameArray, allocator);
         }
-        std::ofstream ofs(outputPath);
-        rapidjson::OStreamWrapper osw(ofs);
 
-        rapidjson::PrettyWriter<rapidjson::OStreamWrapper> writer(osw);
-        jsonDoc.Accept(writer);
-        ofs.close();
+    } else if (type == ExportType::ClaasifyTag) {
+        std::sort(sortedMetatag.begin(), sortedMetatag.end(), std::less<std::pair<std::string, std::string>>());
+
+        for (auto& iter_sorted : sortedMetatag) {
+            rapidjson::Value key(iter_sorted.first.c_str(), allocator);
+            rapidjson::Value val(iter_sorted.second.c_str(), allocator);
+            jsonDoc.AddMember(key, val, allocator);
+        }
+
+    } else if (type == ExportType::ChangeTag) {
+        rapidjson::Value fileNameArray(rapidjson::kArrayType);
+        fileNameArray.SetArray();
+
+        rapidjson::Value objectAttribute(rapidjson::kObjectType);
+        objectAttribute.SetObject();
+
+        rapidjson::Value keyOldName("oldTagName", allocator);
+        rapidjson::Value valOldName((*oldTagName).c_str(), allocator);
+        objectAttribute.AddMember(keyOldName, valOldName, allocator);
+
+        rapidjson::Value keyNewName("newTagName", allocator);
+        rapidjson::Value valNewName((*newTagName).c_str(), allocator);
+        objectAttribute.AddMember(keyNewName, valNewName, allocator);
+
+        rapidjson::Value keyObj("objectType", allocator);
+        rapidjson::Value valObj(tag->objectType.c_str(), allocator);
+        objectAttribute.AddMember(keyObj, valObj, allocator);
+
+        fileNameArray.PushBack(objectAttribute, allocator);
+
+        rapidjson::Value fileName((*srcPath).c_str(), allocator);
+        jsonDoc.AddMember(fileName, fileNameArray, allocator);
+    }
+
+    std::ofstream ofs((*jsonPath));
+    rapidjson::OStreamWrapper osw(ofs);
+
+    rapidjson::PrettyWriter<rapidjson::OStreamWrapper> writer(osw);
+    jsonDoc.Accept(writer);
+    ofs.close();
+}
+
+bool MetatagEX::ChangeMetatagName(std::string inputPath, std::string jsonPath, std::string oldTagName, std::string newTagName, bool bHeaderOnly, bool bSaveToOrigin/* = false*/)
+{
+    std::vector<std::string> files;
+    std::string regexStr = Util::getdir(inputPath, files);
+
+    std::string srcPath;
+    std::wstring docPath;
+
+    for (auto& iter_file : files) {
+        std::vector<METATAG> metatag;
+        OWPML::COwpmlDocumnet* document = ExtractMetatag(inputPath, iter_file, regexStr, &metatag, bHeaderOnly, true);
+
+        if (document == NULL) {
+            continue;
+        } else {
+            srcPath = inputPath + StringResource::PathSeperator + iter_file;
+            docPath = Util::string_to_wstring(srcPath);
+
+            for (auto& tag : metatag) {
+                if (SetMetaTagName(tag.object, Util::string_to_utf16(oldTagName), Util::string_to_utf16(newTagName))) {
+                    if (jsonPath.empty() == false) {
+                        ExportToJson(ExportType::ChangeTag, &jsonPath, &srcPath, &oldTagName, &newTagName, &tag);
+                    } else {
+
+                    }
+                }
+            }
+        }
+
+        if (!bSaveToOrigin) {
+            WCHAR tmpPath[_MAX_PATH];
+            WCHAR index[10] = { 0, };
+
+            wcscpy_s(tmpPath, _countof(tmpPath), docPath.c_str());
+            int n = 1;
+
+            while (PathFileExistsW(tmpPath)) {
+                ZeroMemory(tmpPath, _MAX_PATH);
+                wcscpy_s(tmpPath, _countof(tmpPath), docPath.c_str());
+                PathRemoveExtensionW(tmpPath);
+                swprintf_s(index, _countof(index), L"_%d", n++);
+                wcscat_s(tmpPath, _countof(tmpPath), index);
+                PathAddExtensionW(tmpPath, L".hwpx");
+            }
+
+            docPath = tmpPath;
+        }
+        document->SaveDocument(docPath.c_str());
+
+        delete document;
+    }
+
+    return true;
+}
+
+bool MetatagEX::ImportMetatagFromJson(std::string path, rapidjson::Document &jsonDoc)
+{
+    if (_access(path.c_str(), F_OK) < 0) {
+        std::cout << StringResource::NoJsonFile << std::endl;
+        return false;
+    }
+    std::ifstream ifs(path);
+    rapidjson::IStreamWrapper isw(ifs);
+    jsonDoc.ParseStream(isw);
+    rapidjson::StringBuffer buffer{};
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer{ buffer };
+    jsonDoc.Accept(writer);
+
+    if (jsonDoc.HasParseError()) {
+        std::cout << "Invalid Input" << std::endl;
+
+        return false;
+    }
+
+    rapidjson::Value::MemberIterator itr = jsonDoc.MemberBegin();
+    for (itr; itr != jsonDoc.MemberEnd(); ++itr) {
+        if (itr->value.GetType() == rapidjson::kArrayType) {
+
+            for (auto& arr : itr->value.GetArray()) {
+                if (arr.IsObject()) {
+                    rapidjson::Value var = arr.GetObj();
+                    tagNameContainer.push_back(var["tagName"].GetString());
+                }
+            }
+        } else if (itr->value.GetType() == rapidjson::kStringType) {
+            tagNameContainer.push_back(itr->value.GetString());
+        }
+    }
+    return true;
+}
+
+void MetatagEX::ExportMetatagData(Option option, std::string outputPath) {
+    if (option == Option::Console) {
+        std::vector<std::pair<std::u16string, std::map<std::string, std::string>>>::iterator iter;
+
+        for (auto& iter : tagContainer) {
+            std::cout << "fileName : [" << iter.first << std::endl;
+            for (auto& file : iter.second) {
+                std::cout << "tagName : " << file.tagName << std::endl;
+
+                std::cout << "filePath : " << file.filePath << std::endl;
+
+                std::cout << "objectType : " << file.objectType << std::endl;
+
+                if (file.contentText.empty() == false)
+                    std::cout << "contentText : " << file.contentText << std::endl;
+
+                std::cout << std::endl;
+            }
+            std::cout << "]" << iter.first << std::endl << std::endl;
+        }
+    } else if (option == Option::File) {
+        ExportToJson(ExportType::ExtractTag, &outputPath);
     }
 }
 
-void MetatagEX::TraverseHeader(std::string srcfilePath, std::vector<METATAG>* metatag, OWPML::COwpmlDocumnet* document)
+void MetatagEX::TraverseHeader(bool isExtract, std::string srcfilePath, OWPML::COwpmlDocumnet* document, std::vector<METATAG>* metatag)
 {
     OWPML::Objectlist* objList = document->GetHead()->GetObjectList();
     for (auto& iter_obj : *objList) {
         OWPML::Objectlist result;
         GetMetaTagObject(iter_obj, result);
-        OWPML::Objectlist::iterator iterTagObj = result.begin();
-        for (iterTagObj; iterTagObj != result.end(); ++iterTagObj) {
-            ExtractString(srcfilePath, *iterTagObj, metatag);
+        for (auto& iterTagObj : result) {
+            if (isExtract) {
+                ExtractString(srcfilePath, iterTagObj, metatag);
+            } else {
+                std::string metatagWStr = Util::utf16_to_string(GetMetaTagName(iterTagObj));
+                SearchString(srcfilePath, metatagWStr);
+            }
         }
     }
 }
 
-void MetatagEX::TraverseSection(std::string srcfilePath, std::vector<METATAG>* metatag, OWPML::COwpmlDocumnet* document)
+void MetatagEX::TraverseSection(bool isExtract, std::string srcfilePath, OWPML::COwpmlDocumnet* document, std::vector<METATAG>* metatag)
 {
     std::vector<OWPML::CSectionType*>::iterator iter_section = document->GetSections()->begin();
     for (iter_section; iter_section != document->GetSections()->end(); ++iter_section) {
         std::multimap< std::u16string, OWPML::CObject*> objectList;
         GetMetaTagObject(*iter_section, objectList);
+
         for (auto& iter_object : objectList) {
-            ExtractString(srcfilePath, (iter_object).second, metatag);
+            if (isExtract) {
+                ExtractString(srcfilePath, (iter_object).second, metatag);
+            } else {
+                std::string metatagWStr = Util::utf16_to_string((iter_object).first);
+                SearchString(srcfilePath, metatagWStr);
+            }
         }
     }
-
 }
 
 void MetatagEX::ExtractString(std::string srcfilePath, OWPML::CObject* object, std::vector<METATAG>* metatag)
@@ -429,6 +376,18 @@ void MetatagEX::ExtractString(std::string srcfilePath, OWPML::CObject* object, s
     newTag.object = object;
 
     metatag->push_back(newTag);
+}
+
+void MetatagEX::SearchString(std::string srcfilePath, std::string tag) {
+    std::vector<std::string>::iterator iter_find = std::find(tagNameContainer.begin(), tagNameContainer.end(), tag);
+
+    if (iter_find != tagNameContainer.end()) {
+        char fullPath[MAX_PATH];
+        char* fileName;
+        GetFullPathNameA(srcfilePath.c_str(), MAX_PATH, fullPath, &fileName);
+
+        sortedMetatag.push_back(make_pair(*iter_find, fullPath));
+    }
 }
 
 std::u16string MetatagEX::GetObjectTypeText(unsigned int id) {

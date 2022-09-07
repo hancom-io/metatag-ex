@@ -37,6 +37,14 @@ public:
 
     }
 
+    enum ExportType
+    {
+        None = 0,
+        ExtractTag,
+        ClaasifyTag,
+        ChangeTag
+    };
+
     typedef struct Metatag {
         std::string tagName = "";
         std::string filePath = "";
@@ -44,27 +52,38 @@ public:
         std::string objectType = "";
         std::string contentText = "";
         OWPML::CObject* object = NULL;
+
+        bool operator<(Metatag& tag) const {
+            if (this->tagName.compare(tag.tagName) > 0)
+                return true;
+            return false;
+        }
+
     }METATAG;
 
     std::vector<std::pair<std::string, std::vector<METATAG>>> tagContainer;
     std::vector<std::string> tagNameContainer;
     std::vector<std::pair<std::string, std::string>> sortedMetatag;
 
-    void ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc, bool bShowProgress, bool bHeaderOnly);
-    void SortMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bShowProgress, bool bHeaderOnly);
-    bool ChangeMetatagName(std::string inputPath, std::string jsonPath, std::string oldTagName, std::string newTagName, bool bHeaderOnly);
+    void ExtractMetatag(std::string inputPath, std::string outputPath, Option option, Option dsc, bool bHeaderOnly);
+    void ClaasifyMetatag(std::string inputPath, std::string jsonPath, std::string outputPath, Option option, bool bHeaderOnly);
+    bool ChangeMetatagName(std::string inputPath, std::string jsonPath, std::string oldTagName, std::string newTagName, bool bHeaderOnly, bool bSaveToOrigin = false);
 
 private:
-    void TraverseHeader(std::string srcfilePath, std::vector<METATAG>* metatag, OWPML::COwpmlDocumnet* document);
-    void TraverseSection(std::string srcfilePath, std::vector<METATAG>* metatag, OWPML::COwpmlDocumnet* document);
-    void ExtractString(std::string srcfilePath, OWPML::CObject* object, std::vector<METATAG>* metatag);
+    OWPML::COwpmlDocumnet* ExtractMetatag(std::string inputPath, std::string file, std::string regexStr, std::vector<METATAG>* metatag, bool bHeaderOnly, bool isExtract);
 
-    void SearchHeader(std::string srcfilePath, OWPML::COwpmlDocumnet* document);
-    void SearchSection(std::string srcfilePath, OWPML::COwpmlDocumnet* document);
+    void TraverseHeader(bool isExtract, std::string srcfilePath, OWPML::COwpmlDocumnet* document, std::vector<METATAG>* metatag = NULL);
+    void TraverseSection(bool isExtract, std::string srcfilePath, OWPML::COwpmlDocumnet* document, std::vector<METATAG>* metatag = NULL);
+
+    bool ImportMetatagFromJson(std::string path, rapidjson::Document &jsonDoc);
+    void ExportMetatagData(Option option, std::string outputPath);
+
+    void ExportToJson(ExportType type, std::string* jsonPath, std::string* srcPath = NULL, std::string* oldTagName = NULL, std::string* newTagName = NULL, METATAG* tag = NULL);
+
+    void ExtractString(std::string srcfilePath, OWPML::CObject* object, std::vector<METATAG>* metatag);
     void SearchString(std::string srcfilePath, std::string tag);
 
     std::u16string GetObjectTypeText(unsigned int id);
-    bool ImportMetatagFromJson(std::string path, rapidjson::Document &jsonDoc);
 
     void GetMetaTagObject(OWPML::CObject* searchObject, OWPML::Objectlist& result);
     void GetMetaTagObject(OWPML::CObject* searchObject, std::multimap<std::u16string, OWPML::CObject*>& result);

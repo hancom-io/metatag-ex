@@ -58,6 +58,7 @@ bool CommandParser::ParsingInput()
     bool hasSrcJson = false;
     bool hasOldTagName = false;
     bool isChageTagName = false;
+    bool isSaveToOrigin = false;
 
     for(auto& iter : m_inputStrVector){
 
@@ -72,14 +73,14 @@ bool CommandParser::ParsingInput()
             m_DesJsonPath = iter;
         }
 
-        if ((CommandParser::GetCurCommandMap()->find(CommandDef::ChangeTagName) != CommandParser::GetCurCommandMap()->end() &&
+        if ((isChageTagName || isSaveToOrigin) &&
             (iter.find("#") != std::string::npos) &&
-            hasOldTagName == false)) {
+            hasOldTagName == false) {
             m_OldTagName = iter;
             hasOldTagName = true;
-        } else if ((CommandParser::GetCurCommandMap()->find(CommandDef::ChangeTagName) != CommandParser::GetCurCommandMap()->end() &&
+        } else if ((isChageTagName || isSaveToOrigin) &&
             (iter.find("#") != std::string::npos) &&
-            hasOldTagName == true)) {
+            hasOldTagName == true) {
             m_newTagName = iter;
         }
 
@@ -96,16 +97,17 @@ bool CommandParser::ParsingInput()
             CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::ToFile, true));
         } else if (CommandWord::Help.compare(iter) == 0) {
             CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::Help, true));
-        } else if (CommandWord::ShowProgress.compare(iter) == 0) {
-            CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::ShowProgress, true));
         } else if (CommandWord::HeaderOnly.compare(iter) == 0) {
             CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::HeaderOnly, true));
         } else if (CommandWord::ChangeTagName.compare(iter) == 0) {
             CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::ChangeTagName, true));
             isChageTagName = true;
-        } 
+        } else if (CommandWord::SaveToOrigin.compare(iter) == 0) {
+            CommandParser::GetCurCommandMap()->insert(std::make_pair(CommandDef::SaveToOrigin, true));
+            isSaveToOrigin = true;
+        }
 
-        if (hasDL && hasSL)
+        if ((hasDL && hasSL) || (isChageTagName && isSaveToOrigin))
             return false;
     }
     return true;

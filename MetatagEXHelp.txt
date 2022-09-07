@@ -20,7 +20,8 @@
 	-f
 		추출 결과를 json파일로 저장. 해당 옵션 사용시 RESULTFILE명을 입력해야한다.
 	-c
-		태그명 변경. -f 옵션을 주면 변경내역을 json으로 저장 가능하다.
+		태그명 변경 (원본파일_%d.hwpx 형태로 저장)
+		-f 옵션을 주면 변경내역을 json으로 저장 가능하다. 
 		사용법 : MetatagEX -c ./*.hwpx #newTag #oldTag
 				 MetatagEX -c -f ./*.hwpx output.json #newTag #oldTag
 	-dsc
