@@ -99,4 +99,4 @@
 6.  코드 검사가 완료되어 main 브랜치에 반영 된다면 성공🎉
 
 ## Contact
-- 문의사항은 jjeong@hancom.com로 연락주세요.
+문의사항은 [Discussions](https://github.com/hancom-io/metatag-ex/discussions)로 자유롭게 문의 부탁합니다.
