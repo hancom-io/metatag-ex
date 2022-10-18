@@ -61,7 +61,7 @@
    ```
 
 ## License
-자세한 내용은 [LICENSE](https://github.com/hancom-io/metatag-ex/blob/develop/LICENSE) 파일을 참고하세요.
+자세한 내용은 [LICENSE.txt](https://github.com/hancom-io/metatag-ex/blob/develop/LICENSE.txt) 파일을 참고하세요.
 
 ## Opensources
 - rapidjson(MIT)
