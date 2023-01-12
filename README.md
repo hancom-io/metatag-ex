@@ -63,7 +63,7 @@
 ## License
 자세한 내용은 [LICENSE.txt](https://github.com/hancom-io/metatag-ex/blob/develop/LICENSE.txt) 파일을 참고하세요.
 
-## Opensources
+## Third_party
 - rapidjson(MIT)
 - hwpx-owpml-model
 
